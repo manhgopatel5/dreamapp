@@ -3,200 +3,224 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body{
+body {
   margin:0;
   overflow:hidden;
+  position: relative;
 }
 
-/* nền */
-#bg{
+body::after {
+  content:"";
   position:fixed;
   inset:0;
   background:url("IMG_0577.jpeg") no-repeat center;
   background-size:contain;
   z-index:0;
+  pointer-events:none;
 }
 
-/* dot */
-.dot{
+/* counter */
+#counter {
+  position:fixed;
+  top:60px;
+  width:100%;
+  text-align:center;
+  font-size:18px;
+  letter-spacing:4px;
+  color:white;
+  text-shadow:0 0 10px rgba(255,255,255,0.7);
+  z-index:10;
+}
+
+/* dots */
+.dot {
   position:absolute;
   border-radius:50%;
-  z-index:10; /* 👈 luôn nổi */
-}
-
-/* FAB */
-#fab{
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  width:55px;
-  height:55px;
-  border-radius:50%;
-  background:rgba(255,255,255,0.2);
-  backdrop-filter:blur(10px);
-  color:white;
-  font-size:30px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  z-index:20;
-}
-
-/* menu */
-#menu{
-  position:fixed;
-  bottom:90px;
-  right:20px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  opacity:0;
-  pointer-events:none;
-  transform:translateY(20px);
-  transition:0.3s;
-  z-index:20;
-}
-
-#menu.show{
-  opacity:1;
-  pointer-events:auto;
-  transform:translateY(0);
-}
-
-.item{
-  background:black;
-  color:white;
-  padding:10px;
-  border-radius:20px;
+  z-index:2;
 }
 
 /* modal */
-#modal, #authModal{
+#modal {
   position:fixed;
   inset:0;
   display:none;
   justify-content:center;
   align-items:center;
   backdrop-filter:blur(12px);
-  z-index:999;
+  z-index:9999;
 }
 
-.card{
-  background:white;
-  padding:20px;
+.card {
+  width:85%;
+  padding:30px;
+  border-radius:30px;
+  background:rgba(255,255,255,0.6);
+  backdrop-filter:blur(20px);
+  text-align:center;
+}
+
+input {
+  width:100%;
+  margin-top:20px;
+  padding:10px;
+  border:none;
+  border-bottom:1px solid #ccc;
+  background:none;
+}
+
+button {
+  margin-top:20px;
+  padding:12px 25px;
+  border:none;
   border-radius:20px;
+  background:#111;
+  color:white;
 }
 </style>
 </head>
 
 <body>
 
-<!-- nền -->
-<div id="bg"></div>
+<div id="counter">20 / 20</div>
 
-<!-- modal -->
 <div id="modal">
   <div class="card">
     <div id="msg"></div>
+    <input id="input" placeholder="Thì thầm điều gì đó...">
+    <button onclick="send()">SEND</button>
   </div>
 </div>
 
-<div id="authModal">
-  <div class="card">
-    <input id="email" placeholder="Email"><br><br>
-    <input id="password" type="password" placeholder="Password"><br><br>
-    <button onclick="login()">Login</button>
-    <button onclick="register()">Register</button>
-  </div>
-</div>
-
-<!-- FAB -->
-<div id="fab">+</div>
-
-<div id="menu">
-  <div class="item" onclick="openAuth()">Đăng nhập</div>
-  <div class="item">Cài đặt</div>
-  <div class="item">Điều khoản</div>
-</div>
-
-<!-- FIREBASE -->
+<!-- 🔥 FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCLz0V7iQY-r05cbNQ3Wkz58_p-N-b_HOQ",
   authDomain: "dreamapp-ae631.firebaseapp.com",
   projectId: "dreamapp-ae631",
+  storageBucket: "dreamapp-ae631.firebasestorage.app",
+  messagingSenderId: "225789506365",
   appId: "1:225789506365:web:24270adca14c2d85864b54"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth(app);
 
-window.auth=auth;
-window.createUserWithEmailAndPassword=createUserWithEmailAndPassword;
-window.signInWithEmailAndPassword=signInWithEmailAndPassword;
+// 👉 realtime
+let messages = [];
 
-let dots=[];
-const q=query(collection(db,"thoughts"),orderBy("time","desc"));
+const q = query(collection(db,"thoughts"), orderBy("time","desc"));
 
-onSnapshot(q,(snapshot)=>{
-  dots.forEach(d=>d.remove());
-  dots=[];
-
+onSnapshot(q, (snapshot)=>{
+  messages=[];
   snapshot.forEach(doc=>{
-    let d=document.createElement("div");
-
-    let size=12+Math.random()*10;
-
-    d.className="dot";
-    d.style.width=size+"px";
-    d.style.height=size+"px";
-    d.style.background="white";
-
-    d.style.left=Math.random()*window.innerWidth+"px";
-    d.style.top=Math.random()*window.innerHeight+"px";
-
-    d.onclick=()=>{
-      msg.innerText=doc.data().msg;
-      modal.style.display="flex";
-    };
-
-    document.body.appendChild(d);
-    dots.push(d);
+    messages.push(doc.data().msg);
   });
 });
+
+// 👉 global
+window.db=db;
+window.addDoc=addDoc;
+window.collection=collection;
+window.messages=messages;
 </script>
 
-<!-- APP -->
+<!-- 🔥 APP -->
 <script>
-fab.onclick=()=>{
-  menu.classList.toggle("show");
-};
+let popSound = new Audio("https://www.soundjay.com/buttons/sounds/button-16.mp3");
 
-function openAuth(){
-  authModal.style.display="flex";
+let dots=[];
+let available=20;
+let current=null;
+
+for(let i=0;i<20;i++){
+  let d=document.createElement("div");
+  d.used=false;
+
+  let hue=Math.random()*360;
+  let size=Math.random()*14+10;
+
+  d.className="dot";
+  d.style.width=size+"px";
+  d.style.height=size+"px";
+  d.style.background=`hsl(${hue},70%,70%)`;
+  d.style.boxShadow=`0 0 20px hsl(${hue},80%,70%)`;
+
+  d.x=Math.random()*window.innerWidth;
+  d.y=Math.random()*window.innerHeight;
+  d.tx=Math.random()*window.innerWidth;
+  d.ty=Math.random()*window.innerHeight;
+
+  d.style.left=d.x+"px";
+  d.style.top=d.y+"px";
+
+  d.onclick=()=>open(d);
+
+  document.body.appendChild(d);
+  dots.push(d);
 }
 
-async function login(){
-  await signInWithEmailAndPassword(auth,email.value,password.value);
-  alert("OK");
+function animate(){
+  dots.forEach(d=>{
+    d.x+=(d.tx-d.x)*0.01;
+    d.y+=(d.ty-d.y)*0.01;
+
+    if(Math.abs(d.x-d.tx)<1){
+      d.tx=Math.random()*window.innerWidth;
+      d.ty=Math.random()*window.innerHeight;
+    }
+
+    d.style.left=d.x+"px";
+    d.style.top=d.y+"px";
+  });
+  requestAnimationFrame(animate);
+}
+animate();
+
+function open(d){
+  if(d.used) return;
+
+  d.used=true;
+  current=d;
+
+  popSound.currentTime=0;
+  popSound.play().catch(()=>{});
+
+  d.style.opacity=0;
+  setTimeout(()=>d.remove(),300);
+
+  available--;
+  document.getElementById("counter").innerText=available+" / 20";
+
+  // 🔥 lấy message realtime
+  let randomMsg = window.messages[Math.floor(Math.random()*window.messages.length)] 
+    || "Chưa có ai gửi...";
+
+  document.getElementById("msg").innerText=randomMsg;
+
+  document.getElementById("modal").style.display="flex";
 }
 
-async function register(){
-  await createUserWithEmailAndPassword(auth,email.value,password.value);
-  alert("OK");
+async function send(){
+  let text=document.getElementById("input").value;
+
+  if(text.trim()!==""){
+    await addDoc(collection(db,"thoughts"),{
+      msg:text,
+      time:Date.now()
+    });
+  }
+
+  document.getElementById("modal").style.display="none";
+  document.getElementById("input").value="";
 }
 
-modal.onclick=(e)=>{
-  if(e.target.id==="modal") modal.style.display="none";
-};
-
-authModal.onclick=(e)=>{
-  if(e.target.id==="authModal") authModal.style.display="none";
+document.getElementById("modal").onclick=(e)=>{
+  if(e.target.id==="modal"){
+    document.getElementById("modal").style.display="none";
+  }
 };
 </script>
 
