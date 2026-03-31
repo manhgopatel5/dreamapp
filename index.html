@@ -104,7 +104,7 @@ let available = 20;
 
 for(let i=0;i<20;i++){
   let d=document.createElement("div");
-
+d.used = false; // đã mở chưa
 let hue = Math.random() * 360;
 let size = Math.random()*14 + 10;
 
@@ -161,18 +161,16 @@ animate();
 let current=null;
 
 function open(d){
-  current=d;
+  if(d.used) return; // ❌ đã mở thì không mở lại
 
-  // rung nhẹ (mobile)
+  d.used = true; // đánh dấu đã dùng
+  current = d;
+
   if (navigator.vibrate) navigator.vibrate(30);
 
   document.getElementById("msg").innerText=d.msg;
   document.getElementById("modal").style.display="flex";
 }
-document.getElementById("modal").onclick = (e)=>{
-  if(e.target.id==="modal"){
-    document.getElementById("modal").style.display="none";
-  }
 };
 function send(){
   if(current){
