@@ -36,10 +36,10 @@ body::after {
 .dot {
   position:absolute;
   border-radius:50%;
-  z-index:2;
+  z-index:5; /* 👈 tăng lên để không bị che */
 }
 
-/* modal */
+/* modal đọc */
 #modal {
   position:fixed;
   inset:0;
@@ -59,6 +59,17 @@ body::after {
   text-align:center;
 }
 
+/* auth modal */
+#authModal{
+  position:fixed;
+  inset:0;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  backdrop-filter:blur(12px);
+  z-index:9999;
+}
+
 input {
   width:100%;
   margin-top:20px;
@@ -76,6 +87,53 @@ button {
   background:#111;
   color:white;
 }
+
+/* FAB */
+#fab{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  width:55px;
+  height:55px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.2);
+  backdrop-filter:blur(10px);
+  color:white;
+  font-size:30px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:1000;
+  cursor:pointer;
+}
+
+/* menu */
+#menu{
+  position:fixed;
+  bottom:90px;
+  right:20px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(20px);
+  transition:0.3s;
+  z-index:1000;
+}
+
+#menu.show{
+  opacity:1;
+  pointer-events:auto;
+  transform:translateY(0);
+}
+
+.item{
+  background:black;
+  color:white;
+  padding:10px;
+  border-radius:20px;
+}
 </style>
 </head>
 
@@ -83,6 +141,7 @@ button {
 
 <div id="counter">20 / 20</div>
 
+<!-- modal đọc -->
 <div id="modal">
   <div class="card">
     <div id="msg"></div>
@@ -91,10 +150,31 @@ button {
   </div>
 </div>
 
+<!-- modal auth -->
+<div id="authModal">
+  <div class="card">
+    <h3>Đăng nhập / Đăng ký</h3>
+    <input id="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <button onclick="register()">Register</button>
+  </div>
+</div>
+
+<!-- FAB -->
+<div id="fab">+</div>
+
+<div id="menu">
+  <div class="item" onclick="openAuth()">Đăng nhập / Đăng ký</div>
+  <div class="item">Cài đặt</div>
+  <div class="item">Điều khoản</div>
+</div>
+
 <!-- 🔥 FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCLz0V7iQY-r05cbNQ3Wkz58_p-N-b_HOQ",
@@ -107,24 +187,27 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
-// 👉 realtime
-let messages = [];
+// 👉 realtime FIX
+window.messages = [];
 
 const q = query(collection(db,"thoughts"), orderBy("time","desc"));
 
 onSnapshot(q, (snapshot)=>{
-  messages=[];
+  window.messages = [];
   snapshot.forEach(doc=>{
-    messages.push(doc.data().msg);
+    window.messages.push(doc.data().msg);
   });
 });
 
-// 👉 global
+// global
 window.db=db;
 window.addDoc=addDoc;
 window.collection=collection;
-window.messages=messages;
+window.auth=auth;
+window.createUserWithEmailAndPassword=createUserWithEmailAndPassword;
+window.signInWithEmailAndPassword=signInWithEmailAndPassword;
 </script>
 
 <!-- 🔥 APP -->
@@ -192,19 +275,17 @@ function open(d){
   setTimeout(()=>d.remove(),300);
 
   available--;
-  document.getElementById("counter").innerText=available+" / 20";
+  counter.innerText=available+" / 20";
 
-  // 🔥 lấy message realtime
   let randomMsg = window.messages[Math.floor(Math.random()*window.messages.length)] 
     || "Chưa có ai gửi...";
 
-  document.getElementById("msg").innerText=randomMsg;
-
-  document.getElementById("modal").style.display="flex";
+  msg.innerText=randomMsg;
+  modal.style.display="flex";
 }
 
 async function send(){
-  let text=document.getElementById("input").value;
+  let text=input.value;
 
   if(text.trim()!==""){
     await addDoc(collection(db,"thoughts"),{
@@ -213,14 +294,39 @@ async function send(){
     });
   }
 
-  document.getElementById("modal").style.display="none";
-  document.getElementById("input").value="";
+  modal.style.display="none";
+  input.value="";
 }
 
-document.getElementById("modal").onclick=(e)=>{
-  if(e.target.id==="modal"){
-    document.getElementById("modal").style.display="none";
-  }
+/* FAB */
+fab.onclick=()=>{
+  menu.classList.toggle("show");
+  fab.style.transform = menu.classList.contains("show") ? "rotate(45deg)" : "rotate(0)";
+};
+
+function openAuth(){
+  authModal.style.display="flex";
+}
+
+/* login */
+async function login(){
+  await signInWithEmailAndPassword(auth,email.value,password.value);
+  alert("Đăng nhập thành công");
+}
+
+/* register */
+async function register(){
+  await createUserWithEmailAndPassword(auth,email.value,password.value);
+  alert("Đăng ký thành công");
+}
+
+/* đóng modal */
+modal.onclick=(e)=>{
+  if(e.target.id==="modal") modal.style.display="none";
+};
+
+authModal.onclick=(e)=>{
+  if(e.target.id==="authModal") authModal.style.display="none";
 };
 </script>
 
