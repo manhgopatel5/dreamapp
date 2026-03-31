@@ -7,14 +7,14 @@ body {
   margin: 0;
   overflow: hidden;
   font-family: -apple-system, sans-serif;
-  background: url("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe") no-repeat center/cover;
+  background: url("IMG_0577.jpeg") no-repeat center/cover;
 }
 body::before {
   content: "";
   position: fixed;
   inset: 0;
-  backdrop-filter: blur(30px);
-  background: rgba(255,255,255,0.15);
+  background: rgba(0,0,0,0.35); /* 👈 làm tối nhẹ cho nổi dot */
+  backdrop-filter: blur(15px);
   pointer-events: none;
 }
 /* counter */
@@ -127,7 +127,8 @@ d.style.width=size+"px";
 d.style.height=size+"px";
 
 // màu random
-d.style.background = `hsl(${hue}, 80%, 60%)`;
+d.style.background = `hsl(${hue}, 70%, 70%)`;
+d.style.boxShadow = `0 0 20px hsl(${hue}, 80%, 80%)`;
 
 // glow random
 d.style.boxShadow = `0 0 ${10 + Math.random()*25}px hsl(${hue}, 80%, 70%)`;
