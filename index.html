@@ -3,13 +3,13 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body {
-  margin: 0;
-  overflow: hidden;
-  font-family: -apple-system, sans-serif;
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
   background: url("IMG_0577.jpeg") no-repeat center;
-  background-size: cover; /* 👈 đổi lại */
-  background-color: #000;
+  background-size: contain; /* 👈 giữ full ảnh */
+  pointer-events: none;
 }
 /* counter */
 #counter {
