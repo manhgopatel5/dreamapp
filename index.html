@@ -99,6 +99,7 @@ button {
 </div>
 
 <script>
+let popSound = new Audio("https://www.soundjay.com/buttons/sounds/button-16.mp3");
 let dots = [];
 let available = 20;
 
@@ -161,17 +162,37 @@ animate();
 let current=null;
 
 function open(d){
-  if(d.used) return; // ❌ đã mở thì không mở lại
+  if(d.used) return;
 
-  d.used = true; // đánh dấu đã dùng
+  d.used = true;
   current = d;
 
+  // rung
   if (navigator.vibrate) navigator.vibrate(30);
 
-  document.getElementById("msg").innerText=d.msg;
-  document.getElementById("modal").style.display="flex";
+  // âm thanh pop
+  popSound.currentTime = 0;
+  popSound.play();
+
+  // hiệu ứng biến mất mượt
+  d.style.transition = "all 0.3s ease";
+  d.style.transform = "scale(2)";
+  d.style.opacity = "0";
+
+  setTimeout(()=>{
+    d.remove();
+  }, 300);
+
+  // giảm số lượng
+  available--;
+  document.getElementById("counter").innerText =
+    available + " / 20";
+
+  // mở modal
+  document.getElementById("msg").innerText = d.msg;
+  document.getElementById("modal").style.display = "flex";
+}flex";
 }
-};
 function send(){
   if(current){
     current.remove();
