@@ -3,14 +3,13 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body{
+body {
   margin:0;
   overflow:hidden;
-  position:relative;
+  position: relative;
 }
 
-/* nền */
-body::after{
+body::after {
   content:"";
   position:fixed;
   inset:0;
@@ -21,7 +20,7 @@ body::after{
 }
 
 /* counter */
-#counter{
+#counter {
   position:fixed;
   top:60px;
   width:100%;
@@ -31,14 +30,14 @@ body::after{
 }
 
 /* dot */
-.dot{
+.dot {
   position:absolute;
   border-radius:50%;
   z-index:5;
 }
 
 /* modal */
-#modal, #authModal{
+#modal {
   position:fixed;
   inset:0;
   display:none;
@@ -48,7 +47,7 @@ body::after{
   z-index:9999;
 }
 
-.card{
+.card {
   width:85%;
   padding:20px;
   border-radius:20px;
@@ -56,53 +55,15 @@ body::after{
   text-align:center;
 }
 
-input{
+input {
   width:100%;
   margin-top:10px;
   padding:10px;
 }
 
-/* FAB */
-#fab{
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  width:55px;
-  height:55px;
-  border-radius:50%;
-  background:rgba(255,255,255,0.2);
-  color:white;
-  font-size:30px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  z-index:1000;
-}
-
-/* menu */
-#menu{
-  position:fixed;
-  bottom:90px;
-  right:20px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  opacity:0;
-  pointer-events:none;
-  transition:0.3s;
-  z-index:1000;
-}
-
-#menu.show{
-  opacity:1;
-  pointer-events:auto;
-}
-
-.item{
-  background:black;
-  color:white;
-  padding:10px;
-  border-radius:20px;
+button {
+  margin-top:15px;
+  padding:10px 20px;
 }
 </style>
 </head>
@@ -111,38 +72,21 @@ input{
 
 <div id="counter">...</div>
 
-<!-- đọc message -->
 <div id="modal">
   <div class="card">
     <div id="msg"></div>
     <div id="author" style="font-size:12px;color:#666;margin-top:10px"></div>
+    <button onclick="send()">Gửi tin mới</button>
   </div>
-</div>
-
-<!-- auth -->
-<div id="authModal">
-  <div class="card">
-    <h3>Đăng nhập / Đăng ký</h3>
-    <input id="email" placeholder="Email">
-    <input id="password" type="password" placeholder="Password">
-    <input id="name" placeholder="Tên hiển thị">
-    <button onclick="login()">Login</button>
-    <button onclick="register()">Register</button>
-  </div>
-</div>
-
-<!-- FAB -->
-<div id="fab">+</div>
-
-<div id="menu">
-  <div class="item" onclick="openAuth()">Tài khoản</div>
 </div>
 
 <!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, setDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { 
+  getFirestore, collection, addDoc, deleteDoc, doc,
+  onSnapshot, query, orderBy, limit 
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCLz0V7iQY-r05cbNQ3Wkz58_p-N-b_HOQ",
@@ -153,33 +97,33 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth(app);
 
 // global
-window.db=db;
-window.auth=auth;
-window.addDoc=addDoc;
-window.collection=collection;
+window.db = db;
+window.addDoc = addDoc;
+window.collection = collection;
+window.deleteDoc = deleteDoc;
+window.doc = doc;
 
-let currentUser = null;
+// 🔥 REALTIME DOT THEO DB
+let dots = [];
 
-// 🔥 theo dõi login
-onAuthStateChanged(auth,(user)=>{
-  currentUser=user;
-});
-
-// 🔥 realtime message
-let dots=[];
-const q=query(collection(db,"thoughts"),orderBy("time","desc"));
+const q = query(
+  collection(db,"thoughts"),
+  orderBy("time","desc"),
+  limit(20)
+);
 
 onSnapshot(q,(snapshot)=>{
+  // xoá dot cũ
   dots.forEach(d=>d.remove());
   dots=[];
 
   let count=0;
 
   snapshot.forEach(docu=>{
-    let data=docu.data();
+    let data = docu.data();
+    let id = docu.id;
 
     let d=document.createElement("div");
 
@@ -188,15 +132,20 @@ onSnapshot(q,(snapshot)=>{
     d.className="dot";
     d.style.width=size+"px";
     d.style.height=size+"px";
-    d.style.background="white";
+    d.style.background=`hsl(${Math.random()*360},70%,70%)`;
+    d.style.boxShadow=`0 0 20px white`;
 
     d.style.left=Math.random()*window.innerWidth+"px";
     d.style.top=Math.random()*window.innerHeight+"px";
 
-    d.onclick=()=>{
+    d.onclick=async ()=>{
+      // hiển thị
       msg.innerText=data.msg;
       author.innerText="by "+(data.name || "ẩn danh");
       modal.style.display="flex";
+
+      // 🔥 XOÁ DB LUÔN
+      await deleteDoc(doc(db,"thoughts",id));
     };
 
     document.body.appendChild(d);
@@ -206,69 +155,28 @@ onSnapshot(q,(snapshot)=>{
 
   counter.innerText=count+" messages";
 });
-
-// global
-window.currentUser=()=>currentUser;
-window.setDoc=setDoc;
-window.doc=doc;
-window.createUserWithEmailAndPassword=createUserWithEmailAndPassword;
-window.signInWithEmailAndPassword=signInWithEmailAndPassword;
 </script>
 
 <!-- APP -->
 <script>
-// FAB
-fab.onclick=()=>{
-  menu.classList.toggle("show");
-};
+let popSound = new Audio("https://www.soundjay.com/buttons/sounds/button-16.mp3");
 
-function openAuth(){
-  authModal.style.display="flex";
-}
-
-// REGISTER
-async function register(){
-  let user=await createUserWithEmailAndPassword(auth,email.value,password.value);
-
-  // lưu profile
-  await setDoc(doc(db,"users",user.user.uid),{
-    name:name.value,
-    email:email.value
-  });
-
-  alert("Đăng ký xong");
-}
-
-// LOGIN
-async function login(){
-  await signInWithEmailAndPassword(auth,email.value,password.value);
-  alert("Đăng nhập xong");
-}
-
-// GỬI MESSAGE
+// gửi thử
 async function send(){
-  if(!currentUser()){
-    alert("Phải đăng nhập");
-    return;
+  let text = prompt("Nhập tin:");
+
+  if(text){
+    await addDoc(collection(db,"thoughts"),{
+      msg:text,
+      name:"ẩn danh",
+      time:Date.now()
+    });
   }
-
-  await addDoc(collection(db,"thoughts"),{
-    msg:input.value,
-    user:currentUser().uid,
-    name:name.value || "ẩn danh",
-    time:Date.now()
-  });
-
-  modal.style.display="none";
 }
 
 // đóng modal
 modal.onclick=(e)=>{
   if(e.target.id==="modal") modal.style.display="none";
-};
-
-authModal.onclick=(e)=>{
-  if(e.target.id==="authModal") authModal.style.display="none";
 };
 </script>
 
