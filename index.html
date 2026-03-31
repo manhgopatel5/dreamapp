@@ -3,13 +3,18 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
+body {
+  position: relative;
+  z-index: 0;
+}
 body::after {
   content: "";
   position: fixed;
   inset: 0;
   background: url("IMG_0577.jpeg") no-repeat center;
-  background-size: contain; /* 👈 giữ full ảnh */
+  background-size: contain;
   pointer-events: none;
+  z-index: 0; /* 👈 nằm dưới */
 }
 /* counter */
 #counter {
@@ -27,6 +32,7 @@ body::after {
   position: absolute;
   border-radius: 50%;
   transition: transform 0.2s;
+  z-index: 2; /* 👈 nổi lên trên */
 }
 
 .dot:active {
