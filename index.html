@@ -25,8 +25,6 @@ body {
 .dot {
   position: absolute;
   border-radius: 50%;
-  background: #111;
-  box-shadow: 0 0 12px rgba(0,0,0,0.25);
   transition: transform 0.2s;
 }
 
@@ -107,11 +105,18 @@ let available = 20;
 for(let i=0;i<20;i++){
   let d=document.createElement("div");
 
-  let size=Math.random()*12 + 10; // TO RÕ
+let hue = Math.random() * 360;
+let size = Math.random()*14 + 10;
 
-  d.className="dot";
-  d.style.width=size+"px";
-  d.style.height=size+"px";
+d.className="dot";
+d.style.width=size+"px";
+d.style.height=size+"px";
+
+// màu random
+d.style.background = `hsl(${hue}, 80%, 60%)`;
+
+// glow random
+d.style.boxShadow = `0 0 ${10 + Math.random()*25}px hsl(${hue}, 80%, 70%)`;
 
   d.x=Math.random()*window.innerWidth;
   d.y=Math.random()*window.innerHeight;
@@ -129,7 +134,12 @@ for(let i=0;i<20;i++){
   document.body.appendChild(d);
   dots.push(d);
 }
-
+setInterval(()=>{
+  dots.forEach(d=>{
+    let scale = 0.9 + Math.random()*0.4;
+    d.style.transform = `scale(${scale})`;
+  });
+}, 800);
 function animate(){
   dots.forEach(d=>{
     d.x+=(d.tx-d.x)*0.01;
@@ -159,7 +169,11 @@ function open(d){
   document.getElementById("msg").innerText=d.msg;
   document.getElementById("modal").style.display="flex";
 }
-
+document.getElementById("modal").onclick = (e)=>{
+  if(e.target.id==="modal"){
+    document.getElementById("modal").style.display="none";
+  }
+};
 function send(){
   if(current){
     current.remove();
