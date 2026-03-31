@@ -2,13 +2,16 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
 body {
   margin:0;
   overflow:hidden;
   position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+/* background */
 body::after {
   content:"";
   position:fixed;
@@ -36,56 +39,71 @@ body::after {
 .dot {
   position:absolute;
   border-radius:50%;
-  z-index:5; /* 👈 tăng lên để không bị che */
+  z-index:5;
 }
 
-/* modal đọc */
-#modal {
+/* modal */
+#modal, #authModal{
   position:fixed;
   inset:0;
   display:none;
   justify-content:center;
   align-items:center;
-  backdrop-filter:blur(12px);
+  backdrop-filter:blur(15px);
   z-index:9999;
 }
 
+/* glass card */
 .card {
   width:85%;
   padding:30px;
   border-radius:30px;
-  background:rgba(255,255,255,0.6);
+
+  background:rgba(255,255,255,0.12);
   backdrop-filter:blur(20px);
+
+  border:1px solid rgba(255,255,255,0.2);
+
+  box-shadow:
+    0 10px 40px rgba(0,0,0,0.4),
+    inset 0 0 20px rgba(255,255,255,0.1);
+
   text-align:center;
+  color:white;
 }
 
-/* auth modal */
-#authModal{
-  position:fixed;
-  inset:0;
-  display:none;
-  justify-content:center;
-  align-items:center;
-  backdrop-filter:blur(12px);
-  z-index:9999;
-}
-
+/* input */
 input {
   width:100%;
   margin-top:20px;
-  padding:10px;
+  padding:12px;
   border:none;
-  border-bottom:1px solid #ccc;
-  background:none;
+  border-radius:10px;
+
+  background:rgba(255,255,255,0.1);
+  color:white;
+
+  outline:none;
 }
 
+/* button */
 button {
   margin-top:20px;
   padding:12px 25px;
   border:none;
   border-radius:20px;
-  background:#111;
+
+  background:linear-gradient(135deg,#6a5cff,#b16cff);
   color:white;
+
+  box-shadow:
+    0 0 20px rgba(150,100,255,0.6);
+
+  transition:0.2s;
+}
+
+button:active{
+  transform:scale(0.95);
 }
 
 /* FAB */
@@ -93,31 +111,40 @@ button {
   position:fixed;
   bottom:20px;
   right:20px;
-  width:55px;
-  height:55px;
+  width:60px;
+  height:60px;
   border-radius:50%;
-  background:rgba(255,255,255,0.2);
-  backdrop-filter:blur(10px);
+
+  background:rgba(255,255,255,0.15);
+  backdrop-filter:blur(12px);
+
   color:white;
   font-size:30px;
+
   display:flex;
   justify-content:center;
   align-items:center;
+
   z-index:1000;
   cursor:pointer;
+
+  transition:0.3s;
 }
 
 /* menu */
 #menu{
   position:fixed;
-  bottom:90px;
+  bottom:100px;
   right:20px;
+
   display:flex;
   flex-direction:column;
-  gap:10px;
+  gap:12px;
+
   opacity:0;
   pointer-events:none;
   transform:translateY(20px);
+
   transition:0.3s;
   z-index:1000;
 }
@@ -128,11 +155,54 @@ button {
   transform:translateY(0);
 }
 
+/* item */
 .item{
-  background:black;
+  padding:14px 20px;
+  border-radius:25px;
+
+  background:rgba(255,255,255,0.1);
+  backdrop-filter:blur(12px);
+
   color:white;
-  padding:10px;
-  border-radius:20px;
+  font-weight:500;
+
+  border:1px solid rgba(255,255,255,0.2);
+
+  box-shadow:
+    0 4px 20px rgba(0,0,0,0.3),
+    inset 0 0 10px rgba(255,255,255,0.1);
+
+  transition:0.25s;
+}
+
+.item:active{
+  transform:scale(0.95);
+}
+
+/* nút chính */
+.item.primary{
+  background:linear-gradient(135deg,#6a5cff,#b16cff);
+  border:none;
+
+  box-shadow:
+    0 0 20px rgba(150,100,255,0.6),
+    0 0 40px rgba(150,100,255,0.3);
+}
+
+/* animation */
+#menu.show .item{
+  animation:fadeUp 0.4s ease forwards;
+}
+
+@keyframes fadeUp{
+  from{
+    opacity:0;
+    transform:translateY(20px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
 }
 </style>
 </head>
@@ -150,10 +220,10 @@ button {
   </div>
 </div>
 
-<!-- modal auth -->
+<!-- auth modal -->
 <div id="authModal">
   <div class="card">
-    <h3>Đăng nhập / Đăng ký</h3>
+    <h3>🔐 Đăng nhập / Đăng ký</h3>
     <input id="email" placeholder="Email">
     <input id="password" type="password" placeholder="Password">
     <button onclick="login()">Login</button>
@@ -164,32 +234,29 @@ button {
 <!-- FAB -->
 <div id="fab">+</div>
 
+<!-- menu -->
 <div id="menu">
-  <div class="item" onclick="openAuth()">Đăng nhập / Đăng ký</div>
-  <div class="item">Cài đặt</div>
-  <div class="item">Điều khoản</div>
+  <div class="item primary" onclick="openAuth()">🔐 Đăng nhập / Đăng ký</div>
+  <div class="item">⚙️ Cài đặt</div>
+  <div class="item">📜 Điều khoản</div>
 </div>
 
-<!-- 🔥 FIREBASE -->
+<!-- FIREBASE giữ nguyên -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCLz0V7iQY-r05cbNQ3Wkz58_p-N-b_HOQ",
+  apiKey: "AIza...",
   authDomain: "dreamapp-ae631.firebaseapp.com",
   projectId: "dreamapp-ae631",
-  storageBucket: "dreamapp-ae631.firebasestorage.app",
-  messagingSenderId: "225789506365",
-  appId: "1:225789506365:web:24270adca14c2d85864b54"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// 👉 realtime FIX
 window.messages = [];
 
 const q = query(collection(db,"thoughts"), orderBy("time","desc"));
@@ -201,7 +268,6 @@ onSnapshot(q, (snapshot)=>{
   });
 });
 
-// global
 window.db=db;
 window.addDoc=addDoc;
 window.collection=collection;
@@ -210,13 +276,12 @@ window.createUserWithEmailAndPassword=createUserWithEmailAndPassword;
 window.signInWithEmailAndPassword=signInWithEmailAndPassword;
 </script>
 
-<!-- 🔥 APP -->
+<!-- APP -->
 <script>
 let popSound = new Audio("https://www.soundjay.com/buttons/sounds/button-16.mp3");
 
 let dots=[];
 let available=20;
-let current=null;
 
 for(let i=0;i<20;i++){
   let d=document.createElement("div");
@@ -266,7 +331,6 @@ function open(d){
   if(d.used) return;
 
   d.used=true;
-  current=d;
 
   popSound.currentTime=0;
   popSound.play().catch(()=>{});
