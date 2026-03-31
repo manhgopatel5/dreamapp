@@ -7,23 +7,112 @@
 body{
   margin:0;
   overflow:hidden;
-  background:black;
+  font-family:-apple-system;
 }
 
-/* background */
+/* BACKGROUND */
 body::after{
   content:"";
   position:fixed;
   inset:0;
   background:url("IMG_0577.jpeg") no-repeat center;
   background-size:cover;
-  opacity:0.5;
+  z-index:0;
+  filter:brightness(0.8);
 }
 
-/* canvas */
+/* CANVAS */
 canvas{
   position:fixed;
   inset:0;
+  z-index:5;
+}
+
+/* FAB */
+#fab{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  width:65px;
+  height:65px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#6a5cff,#b16cff);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:white;
+  font-size:30px;
+  z-index:5000;
+  cursor:pointer;
+  box-shadow:0 0 20px rgba(177,108,255,0.7);
+}
+
+/* MENU */
+#menu{
+  position:fixed;
+  bottom:100px;
+  right:20px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(30px);
+  transition:0.3s;
+  z-index:4000;
+}
+
+#menu.show{
+  opacity:1;
+  pointer-events:auto;
+  transform:translateY(0);
+}
+
+.item{
+  padding:12px 18px;
+  border-radius:16px;
+  background:rgba(0,0,0,0.6);
+  color:white;
+  backdrop-filter:blur(10px);
+  cursor:pointer;
+}
+
+/* AUTH MODAL */
+#authModal{
+  position:fixed;
+  inset:0;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  backdrop-filter:blur(20px);
+  z-index:9999;
+}
+
+.card{
+  width:85%;
+  padding:20px;
+  border-radius:20px;
+  background:rgba(0,0,0,0.75);
+  color:white;
+}
+
+input{
+  width:100%;
+  margin-top:10px;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+}
+
+button{
+  margin-top:15px;
+  padding:12px;
+  border:none;
+  border-radius:16px;
+  background:linear-gradient(135deg,#6a5cff,#b16cff);
+  color:white;
+  width:100%;
 }
 </style>
 </head>
@@ -32,6 +121,23 @@ canvas{
 
 <canvas id="c"></canvas>
 
+<!-- FAB -->
+<div id="fab">+</div>
+
+<!-- MENU -->
+<div id="menu"></div>
+
+<!-- AUTH -->
+<div id="authModal">
+  <div class="card">
+    <h3 id="authTitle"></h3>
+    <input placeholder="Email">
+    <input type="password" placeholder="Password">
+    <input placeholder="Tên (đăng ký)">
+    <button id="authBtn"></button>
+  </div>
+</div>
+
 <script>
 const canvas = document.getElementById("c");
 const ctx = canvas.getContext("2d");
@@ -39,48 +145,68 @@ const ctx = canvas.getContext("2d");
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
-/* CONFIG */
-const COUNT = 70;
-const MAX_DIST = 130;
-const CENTER_FORCE = 0.0004;
-const REPULSION = 0.05;
+/* UI */
+const fab = document.getElementById("fab");
+const menu = document.getElementById("menu");
+const authModal = document.getElementById("authModal");
+const authTitle = document.getElementById("authTitle");
+const authBtn = document.getElementById("authBtn");
 
-/* TOUCH */
+fab.onclick = () => menu.classList.toggle("show");
+
+menu.innerHTML = `
+  <div class="item" onclick="openLogin()">Đăng nhập</div>
+  <div class="item" onclick="openRegister()">Đăng ký</div>
+`;
+
+function openLogin(){
+  authModal.style.display="flex";
+  authTitle.innerText="Đăng nhập";
+  authBtn.innerText="Login";
+}
+
+function openRegister(){
+  authModal.style.display="flex";
+  authTitle.innerText="Đăng ký";
+  authBtn.innerText="Register";
+}
+
+authModal.onclick = (e)=>{
+  if(e.target === authModal){
+    authModal.style.display="none";
+  }
+};
+
+/* DOT CONFIG */
+let dots = [];
 let touches = {};
 
-/* DOT */
-let dots = [];
-
-for(let i=0;i<COUNT;i++){
+for(let i=0;i<40;i++){
   dots.push({
-    x: Math.random()*canvas.width,
-    y: Math.random()*canvas.height,
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
     vx:(Math.random()-0.5)*2,
     vy:(Math.random()-0.5)*2,
-    size: Math.random()*2+2
+    size:Math.random()*12+10,
+    color:`hsl(${Math.random()*360},70%,70%)`
   });
 }
 
-/* TOUCH EVENTS */
+/* TOUCH */
 canvas.addEventListener("touchstart",e=>{
   for(let t of e.touches){
-    touches[t.identifier] = {
-      x:t.clientX,
-      y:t.clientY,
-      vx:0,
-      vy:0
-    };
+    touches[t.identifier] = {x:t.clientX,y:t.clientY,vx:0,vy:0};
   }
 });
 
 canvas.addEventListener("touchmove",e=>{
   for(let t of e.touches){
-    let prev = touches[t.identifier];
-    if(prev){
-      prev.vx = t.clientX - prev.x;
-      prev.vy = t.clientY - prev.y;
-      prev.x = t.clientX;
-      prev.y = t.clientY;
+    let p=touches[t.identifier];
+    if(p){
+      p.vx=t.clientX-p.x;
+      p.vy=t.clientY-p.y;
+      p.x=t.clientX;
+      p.y=t.clientY;
     }
   }
 });
@@ -91,123 +217,55 @@ canvas.addEventListener("touchend",e=>{
   }
 });
 
-/* mouse support */
+/* mouse */
 canvas.addEventListener("mousemove",e=>{
-  touches["mouse"] = {
-    x:e.clientX,
-    y:e.clientY,
-    vx:0,
-    vy:0
-  };
+  touches["m"]={x:e.clientX,y:e.clientY,vx:0,vy:0};
 });
 
 /* ANIMATE */
 function animate(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  /* MOVE */
   dots.forEach(d=>{
 
-    /* center gravity */
-    let cx = canvas.width/2;
-    let cy = canvas.height/2;
-
-    d.vx += (cx - d.x) * CENTER_FORCE;
-    d.vy += (cy - d.y) * CENTER_FORCE;
-
-    /* TOUCH INTERACTION */
+    /* interaction */
     for(let id in touches){
-      let t = touches[id];
+      let t=touches[id];
 
-      let dx = t.x - d.x;
-      let dy = t.y - d.y;
-      let dist = Math.sqrt(dx*dx+dy*dy);
+      let dx=t.x-d.x;
+      let dy=t.y-d.y;
+      let dist=Math.sqrt(dx*dx+dy*dy);
 
-      /* hút */
-      if(dist < 200){
-        d.vx += dx * 0.002;
-        d.vy += dy * 0.002;
+      if(dist<200){
+        d.vx+=dx*0.002;
+        d.vy+=dy*0.002;
       }
 
-      /* đẩy mạnh khi vuốt */
-      if(dist < 80){
-        d.vx += t.vx * 0.2;
-        d.vy += t.vy * 0.2;
+      if(dist<80){
+        d.vx+=t.vx*0.2;
+        d.vy+=t.vy*0.2;
       }
 
-      /* shockwave */
-      if(dist < 50){
-        let angle = Math.atan2(dy,dx);
-        d.vx -= Math.cos(angle)*1.5;
-        d.vy -= Math.sin(angle)*1.5;
+      if(dist<50){
+        let a=Math.atan2(dy,dx);
+        d.vx-=Math.cos(a)*1.2;
+        d.vy-=Math.sin(a)*1.2;
       }
     }
 
-    d.x += d.vx;
-    d.y += d.vy;
+    d.x+=d.vx;
+    d.y+=d.vy;
 
-    /* friction */
-    d.vx *= 0.98;
-    d.vy *= 0.98;
+    d.vx*=0.98;
+    d.vy*=0.98;
 
-    /* bounce */
-    if(d.x<0 || d.x>canvas.width) d.vx*=-1;
-    if(d.y<0 || d.y>canvas.height) d.vy*=-1;
-  });
+    if(d.x<0||d.x>canvas.width) d.vx*=-1;
+    if(d.y<0||d.y>canvas.height) d.vy*=-1;
 
-  /* DOT INTERACTION */
-  for(let i=0;i<dots.length;i++){
-    for(let j=i+1;j<dots.length;j++){
-
-      let a = dots[i];
-      let b = dots[j];
-
-      let dx = a.x - b.x;
-      let dy = a.y - b.y;
-      let dist = Math.sqrt(dx*dx+dy*dy);
-
-      /* line */
-      if(dist < MAX_DIST){
-        ctx.beginPath();
-        ctx.moveTo(a.x,a.y);
-        ctx.lineTo(b.x,b.y);
-        ctx.strokeStyle = "rgba(170,140,255,"+(1 - dist/MAX_DIST)+")";
-        ctx.stroke();
-      }
-
-      /* repulsion */
-      if(dist < 30){
-        let angle = Math.atan2(dy,dx);
-        let force = (30 - dist) * REPULSION;
-
-        a.vx += Math.cos(angle)*force;
-        a.vy += Math.sin(angle)*force;
-
-        b.vx -= Math.cos(angle)*force;
-        b.vy -= Math.sin(angle)*force;
-      }
-    }
-  }
-
-  /* DRAW */
-  dots.forEach(d=>{
+    /* draw */
     ctx.beginPath();
-
-    let g = ctx.createRadialGradient(
-      d.x,d.y,0,
-      d.x,d.y,d.size*6
-    );
-
-    g.addColorStop(0,"rgba(180,150,255,1)");
-    g.addColorStop(1,"rgba(180,150,255,0)");
-
-    ctx.fillStyle = g;
-    ctx.arc(d.x,d.y,d.size,0,Math.PI*2);
-    ctx.fill();
-
-    ctx.beginPath();
-    ctx.arc(d.x,d.y,d.size,0,Math.PI*2);
-    ctx.fillStyle="white";
+    ctx.arc(d.x,d.y,d.size/2,0,Math.PI*2);
+    ctx.fillStyle=d.color;
     ctx.fill();
   });
 
@@ -217,9 +275,9 @@ function animate(){
 animate();
 
 /* resize */
-onresize = ()=>{
-  canvas.width = innerWidth;
-  canvas.height = innerHeight;
+onresize=()=>{
+  canvas.width=innerWidth;
+  canvas.height=innerHeight;
 };
 </script>
 
