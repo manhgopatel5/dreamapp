@@ -4,14 +4,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body {
+body{
   margin:0;
   overflow:hidden;
   font-family:-apple-system,BlinkMacSystemFont,sans-serif;
 }
 
 /* background */
-body::after {
+body::after{
   content:"";
   position:fixed;
   inset:0;
@@ -21,26 +21,126 @@ body::after {
 }
 
 /* counter */
-#counter {
+#counter{
   position:fixed;
   top:60px;
   width:100%;
   text-align:center;
-  font-size:18px;
-  letter-spacing:4px;
   color:white;
   z-index:10;
 }
 
 /* dots */
-.dot {
+.dot{
   position:absolute;
   border-radius:50%;
   z-index:5;
 }
 
+/* FAB */
+#fab{
+  position:fixed;
+  bottom:25px;
+  right:25px;
+  width:65px;
+  height:65px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  font-size:30px;
+  z-index:3000;
+  cursor:pointer;
+
+  background:linear-gradient(135deg,#6a5cff,#b16cff);
+  box-shadow:0 0 25px rgba(150,100,255,0.8);
+
+  transition:0.4s;
+}
+
+/* RADIAL MENU */
+#menu{
+  position:fixed;
+  bottom:55px;
+  right:55px;
+  width:0;
+  height:0;
+  z-index:2000;
+}
+
+.item{
+  position:absolute;
+
+  width:70px;
+  height:70px;
+  border-radius:50%;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  color:white;
+
+  transform:translate(0,0) scale(0);
+  opacity:0;
+
+  transition:0.4s;
+}
+
+/* ICON */
+.item svg{
+  width:26px;
+  height:26px;
+  fill:white;
+}
+
+/* 🌈 NEON GRADIENT + ANIMATION */
+@keyframes gradientMove{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+
+.item{
+  background:linear-gradient(270deg,#6a5cff,#00c6ff,#ff0080);
+  background-size:400% 400%;
+  animation:gradientMove 6s ease infinite;
+
+  box-shadow:
+    0 0 20px rgba(255,255,255,0.6),
+    0 0 40px rgba(255,0,150,0.5);
+}
+
+/* ✨ HOVER GLOW */
+.item:active{
+  transform:scale(1.2);
+  box-shadow:
+    0 0 30px white,
+    0 0 60px rgba(255,0,200,1);
+}
+
+/* OPEN STATE */
+#menu.show .item{
+  opacity:1;
+  transform:scale(1);
+}
+
+/* POSITIONS (RADIAL) */
+#menu.show .i1{
+  transform:translate(-90px,-20px) scale(1);
+}
+
+#menu.show .i2{
+  transform:translate(-60px,-90px) scale(1);
+}
+
+#menu.show .i3{
+  transform:translate(0,-120px) scale(1);
+}
+
 /* modal */
-#modal, #authModal{
+#modal,#authModal{
   position:fixed;
   inset:0;
   display:none;
@@ -50,139 +150,30 @@ body::after {
   z-index:9999;
 }
 
-.card {
+.card{
   width:85%;
   padding:30px;
   border-radius:30px;
   background:rgba(255,255,255,0.12);
-  backdrop-filter:blur(20px);
   color:white;
   text-align:center;
 }
 
-/* input */
-input {
+input{
   width:100%;
   margin-top:20px;
   padding:12px;
   border:none;
   border-radius:12px;
-  background:rgba(255,255,255,0.1);
-  color:white;
 }
 
-/* button */
-button {
+button{
   margin-top:20px;
   padding:12px 25px;
   border:none;
   border-radius:20px;
   background:linear-gradient(135deg,#6a5cff,#b16cff);
   color:white;
-}
-
-/* FAB */
-#fab{
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  width:60px;
-  height:60px;
-  border-radius:50%;
-  background:rgba(255,255,255,0.15);
-  backdrop-filter:blur(12px);
-  color:white;
-  font-size:28px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  z-index:3000;
-  cursor:pointer;
-}
-
-/* MENU */
-#menu{
-  position:fixed;
-  bottom:100px;
-  right:20px;
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-  opacity:0;
-  pointer-events:none;
-  transform:translateY(30px);
-  transition:0.3s;
-  z-index:2000;
-}
-
-#menu.show{
-  opacity:1;
-  pointer-events:auto;
-  transform:translateY(0);
-}
-
-/* 🔥 NEW ITEM STYLE */
-.item{
-  display:flex;
-  align-items:center;
-  gap:14px;
-
-  padding:12px 16px;
-  border-radius:18px;
-
-  background:rgba(0,0,0,0.35);
-  backdrop-filter:blur(16px);
-
-  color:white;
-  font-size:14px;
-  font-weight:500;
-
-  box-shadow:
-    0 10px 30px rgba(0,0,0,0.5);
-
-  transition:0.25s;
-}
-
-/* icon circle */
-.item .icon{
-  width:38px;
-  height:38px;
-  border-radius:50%;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  font-size:18px;
-  background:rgba(255,255,255,0.15);
-}
-
-/* text block */
-.item .text{
-  display:flex;
-  flex-direction:column;
-}
-
-/* title */
-.item .title{
-  font-size:14px;
-}
-
-/* subtitle */
-.item .sub{
-  font-size:11px;
-  opacity:0.6;
-}
-
-/* hover effect */
-.item:active{
-  transform:scale(0.95);
-  background:rgba(255,255,255,0.15);
-}
-
-/* highlight login */
-.item.primary{
-  background:linear-gradient(135deg,#6a5cff,#b16cff);
 }
 </style>
 </head>
@@ -191,135 +182,77 @@ button {
 
 <div id="counter">20 / 20</div>
 
+<!-- FAB -->
+<div id="fab">+</div>
+
+<!-- RADIAL MENU -->
+<div id="menu">
+
+  <div class="item i1" onclick="openAuth()">
+    <svg viewBox="0 0 24 24">
+      <path d="M12 1a5 5 0 0 0-5 5v4H6v10h12V10h-1V6a5 5 0 0 0-5-5z"/>
+    </svg>
+  </div>
+
+  <div class="item i2">
+    <svg viewBox="0 0 24 24">
+      <path d="M19 12a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/>
+    </svg>
+  </div>
+
+  <div class="item i3">
+    <svg viewBox="0 0 24 24">
+      <path d="M6 2h12v20l-6-3-6 3z"/>
+    </svg>
+  </div>
+
+</div>
+
 <!-- modal -->
 <div id="modal">
   <div class="card">
     <div id="msg"></div>
-    <input id="input" placeholder="Thì thầm điều gì đó...">
+    <input id="input">
     <button onclick="send()">SEND</button>
   </div>
 </div>
 
-<!-- auth -->
 <div id="authModal">
   <div class="card">
-    <h3>🔐 Đăng nhập / Đăng ký</h3>
-    <input id="email" placeholder="Email">
-    <input id="password" type="password" placeholder="Password">
+    <h3>Login</h3>
+    <input id="email">
+    <input id="password">
     <button onclick="login()">Login</button>
-    <button onclick="register()">Register</button>
   </div>
 </div>
 
-<!-- FAB -->
-<div id="fab">+</div>
-
-<!-- MENU -->
-<div id="menu">
-
-  <div class="item primary" onclick="openAuth()">
-    <div class="icon">🔐</div>
-    <div class="text">
-      <div class="title">Đăng nhập</div>
-      <div class="sub">Truy cập tài khoản</div>
-    </div>
-  </div>
-
-  <div class="item">
-    <div class="icon">⚙️</div>
-    <div class="text">
-      <div class="title">Cài đặt</div>
-      <div class="sub">Tuỳ chỉnh ứng dụng</div>
-    </div>
-  </div>
-
-  <div class="item">
-    <div class="icon">📜</div>
-    <div class="text">
-      <div class="title">Điều khoản</div>
-      <div class="sub">Chính sách & bảo mật</div>
-    </div>
-  </div>
-
-</div>
-
-<!-- FIREBASE giữ nguyên -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIza...",
-  authDomain: "dreamapp-ae631.firebaseapp.com",
-  projectId: "dreamapp-ae631",
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
-
-window.messages = [];
-
-const q = query(collection(db,"thoughts"), orderBy("time","desc"));
-
-onSnapshot(q, (snapshot)=>{
-  window.messages = [];
-  snapshot.forEach(doc=>{
-    window.messages.push(doc.data().msg);
-  });
-});
-
-window.db=db;
-window.addDoc=addDoc;
-window.collection=collection;
-window.auth=auth;
-window.createUserWithEmailAndPassword=createUserWithEmailAndPassword;
-window.signInWithEmailAndPassword=signInWithEmailAndPassword;
-</script>
-
-<!-- APP -->
 <script>
 const fab = document.getElementById("fab");
 const menu = document.getElementById("menu");
-const modal = document.getElementById("modal");
-const authModal = document.getElementById("authModal");
-const counter = document.getElementById("counter");
-const msg = document.getElementById("msg");
-const input = document.getElementById("input");
-const email = document.getElementById("email");
-const password = document.getElementById("password");
 
-fab.addEventListener("click", ()=>{
+fab.onclick=()=>{
   menu.classList.toggle("show");
   fab.innerHTML = menu.classList.contains("show") ? "✕" : "+";
-});
+};
 
 /* dots */
 let dots=[];
-let available=20;
-
 for(let i=0;i<20;i++){
   let d=document.createElement("div");
-  d.used=false;
 
-  let hue=Math.random()*360;
   let size=Math.random()*14+10;
-
   d.className="dot";
   d.style.width=size+"px";
   d.style.height=size+"px";
-  d.style.background=`hsl(${hue},70%,70%)`;
+  d.style.background=`hsl(${Math.random()*360},70%,70%)`;
 
-  d.x=Math.random()*window.innerWidth;
-  d.y=Math.random()*window.innerHeight;
-  d.tx=Math.random()*window.innerWidth;
-  d.ty=Math.random()*window.innerHeight;
+  d.x=Math.random()*innerWidth;
+  d.y=Math.random()*innerHeight;
+  d.tx=Math.random()*innerWidth;
+  d.ty=Math.random()*innerHeight;
 
   d.style.left=d.x+"px";
   d.style.top=d.y+"px";
-
-  d.onclick=()=>open(d);
 
   document.body.appendChild(d);
   dots.push(d);
@@ -331,8 +264,8 @@ function animate(){
     d.y+=(d.ty-d.y)*0.01;
 
     if(Math.abs(d.x-d.tx)<1){
-      d.tx=Math.random()*window.innerWidth;
-      d.ty=Math.random()*window.innerHeight;
+      d.tx=Math.random()*innerWidth;
+      d.ty=Math.random()*innerHeight;
     }
 
     d.style.left=d.x+"px";
@@ -342,57 +275,9 @@ function animate(){
 }
 animate();
 
-function open(d){
-  if(d.used) return;
-
-  d.used=true;
-  d.style.opacity=0;
-  setTimeout(()=>d.remove(),300);
-
-  available--;
-  counter.innerText=available+" / 20";
-
-  msg.innerText = window.messages[Math.floor(Math.random()*window.messages.length)] 
-    || "Chưa có ai gửi...";
-
-  modal.style.display="flex";
-}
-
-async function send(){
-  let text=input.value;
-
-  if(text.trim()!==""){
-    await addDoc(collection(db,"thoughts"),{
-      msg:text,
-      time:Date.now()
-    });
-  }
-
-  modal.style.display="none";
-  input.value="";
-}
-
 function openAuth(){
-  authModal.style.display="flex";
+  document.getElementById("authModal").style.display="flex";
 }
-
-async function login(){
-  await signInWithEmailAndPassword(auth,email.value,password.value);
-  alert("Đăng nhập thành công");
-}
-
-async function register(){
-  await createUserWithEmailAndPassword(auth,email.value,password.value);
-  alert("Đăng ký thành công");
-}
-
-modal.onclick=(e)=>{
-  if(e.target.id==="modal") modal.style.display="none";
-};
-
-authModal.onclick=(e)=>{
-  if(e.target.id==="authModal") authModal.style.display="none";
-};
 </script>
 
 </body>
