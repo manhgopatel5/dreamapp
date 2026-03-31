@@ -121,66 +121,51 @@ button {
   transform:translateY(0);
 }
 
-/* 🔥 NEW ITEM STYLE */
+/* item */
 .item{
   display:flex;
   align-items:center;
   gap:14px;
-
   padding:12px 16px;
   border-radius:18px;
-
   background:rgba(0,0,0,0.35);
   backdrop-filter:blur(16px);
-
   color:white;
   font-size:14px;
   font-weight:500;
-
-  box-shadow:
-    0 10px 30px rgba(0,0,0,0.5);
-
+  box-shadow:0 10px 30px rgba(0,0,0,0.5);
   transition:0.25s;
 }
 
-/* icon circle */
 .item .icon{
   width:38px;
   height:38px;
   border-radius:50%;
-
   display:flex;
   align-items:center;
   justify-content:center;
-
   font-size:18px;
   background:rgba(255,255,255,0.15);
 }
 
-/* text block */
 .item .text{
   display:flex;
   flex-direction:column;
 }
 
-/* title */
 .item .title{
   font-size:14px;
 }
 
-/* subtitle */
 .item .sub{
   font-size:11px;
   opacity:0.6;
 }
 
-/* hover effect */
 .item:active{
   transform:scale(0.95);
-  background:rgba(255,255,255,0.15);
 }
 
-/* highlight login */
 .item.primary{
   background:linear-gradient(135deg,#6a5cff,#b16cff);
 }
@@ -191,7 +176,7 @@ button {
 
 <div id="counter">20 / 20</div>
 
-<!-- modal -->
+<!-- MESSAGE MODAL -->
 <div id="modal">
   <div class="card">
     <div id="msg"></div>
@@ -200,14 +185,13 @@ button {
   </div>
 </div>
 
-<!-- auth -->
+<!-- AUTH MODAL -->
 <div id="authModal">
   <div class="card">
-    <h3>🔐 Đăng nhập / Đăng ký</h3>
+    <h3 id="authTitle">🔐 Đăng nhập</h3>
     <input id="email" placeholder="Email">
     <input id="password" type="password" placeholder="Password">
-    <button onclick="login()">Login</button>
-    <button onclick="register()">Register</button>
+    <button id="authBtn">Đăng nhập</button>
   </div>
 </div>
 
@@ -217,7 +201,7 @@ button {
 <!-- MENU -->
 <div id="menu">
 
-  <div class="item primary" onclick="openAuth()">
+  <div class="item primary" onclick="openLogin()">
     <div class="icon">🔐</div>
     <div class="text">
       <div class="title">Đăng nhập</div>
@@ -225,25 +209,17 @@ button {
     </div>
   </div>
 
-  <div class="item">
-    <div class="icon">⚙️</div>
+  <div class="item" onclick="openRegister()">
+    <div class="icon">✨</div>
     <div class="text">
-      <div class="title">Cài đặt</div>
-      <div class="sub">Tuỳ chỉnh ứng dụng</div>
-    </div>
-  </div>
-
-  <div class="item">
-    <div class="icon">📜</div>
-    <div class="text">
-      <div class="title">Điều khoản</div>
-      <div class="sub">Chính sách & bảo mật</div>
+      <div class="title">Đăng ký</div>
+      <div class="sub">Tạo tài khoản mới</div>
     </div>
   </div>
 
 </div>
 
-<!-- FIREBASE giữ nguyên -->
+<!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -289,11 +265,27 @@ const msg = document.getElementById("msg");
 const input = document.getElementById("input");
 const email = document.getElementById("email");
 const password = document.getElementById("password");
+const authBtn = document.getElementById("authBtn");
 
 fab.addEventListener("click", ()=>{
   menu.classList.toggle("show");
   fab.innerHTML = menu.classList.contains("show") ? "✕" : "+";
 });
+
+/* LOGIN / REGISTER SWITCH */
+function openLogin(){
+  authModal.style.display = "flex";
+  document.getElementById("authTitle").innerText = "🔐 Đăng nhập";
+  authBtn.innerText = "Đăng nhập";
+  authBtn.onclick = login;
+}
+
+function openRegister(){
+  authModal.style.display = "flex";
+  document.getElementById("authTitle").innerText = "✨ Đăng ký";
+  authBtn.innerText = "Tạo tài khoản";
+  authBtn.onclick = register;
+}
 
 /* dots */
 let dots=[];
@@ -372,20 +364,28 @@ async function send(){
   input.value="";
 }
 
-function openAuth(){
-  authModal.style.display="flex";
-}
-
+/* AUTH */
 async function login(){
-  await signInWithEmailAndPassword(auth,email.value,password.value);
-  alert("Đăng nhập thành công");
+  try{
+    await signInWithEmailAndPassword(auth,email.value,password.value);
+    alert("Đăng nhập thành công ✨");
+    authModal.style.display="none";
+  }catch{
+    alert("Sai tài khoản hoặc mật khẩu");
+  }
 }
 
 async function register(){
-  await createUserWithEmailAndPassword(auth,email.value,password.value);
-  alert("Đăng ký thành công");
+  try{
+    await createUserWithEmailAndPassword(auth,email.value,password.value);
+    alert("Tạo tài khoản thành công 🚀");
+    authModal.style.display="none";
+  }catch{
+    alert("Email đã tồn tại hoặc lỗi");
+  }
 }
 
+/* close modal */
 modal.onclick=(e)=>{
   if(e.target.id==="modal") modal.style.display="none";
 };
