@@ -6,88 +6,55 @@
 <style>
 body{
   margin:0;
+  overflow:hidden;
   font-family:-apple-system;
-  background:#0a0a14;
-  color:white;
 }
 
-/* animated gradient */
-body::before{
+/* BACKGROUND */
+body::after{
   content:"";
   position:fixed;
   inset:0;
-  background:linear-gradient(270deg,#6a5cff,#b16cff,#00e5ff,#6a5cff);
-  background-size:800% 800%;
-  animation:bg 20s infinite;
-  opacity:0.15;
-}
-@keyframes bg{
-  0%{background-position:0%}
-  50%{background-position:100%}
-  100%{background-position:0%}
+  background:url("IMG_0577.jpeg") no-repeat center;
+  background-size:cover;
+  z-index:0;
 }
 
-/* AUTH */
-#auth{
-  padding:30px;
-}
-
-input{
-  width:100%;
-  padding:14px;
-  margin-top:10px;
-  border:none;
-  border-radius:14px;
-  background:rgba(255,255,255,0.08);
-  color:white;
-}
-
-button{
-  margin-top:15px;
-  padding:14px;
-  width:48%;
-  border:none;
-  border-radius:20px;
-  background:linear-gradient(135deg,#6a5cff,#b16cff);
-  color:white;
-}
-
-/* APP */
-#app{
+/* PROFILE */
+#profileBox{
+  position:fixed;
+  top:15px;
+  left:15px;
   display:none;
-}
-
-/* header */
-#header{
-  display:flex;
   align-items:center;
   gap:10px;
-  padding:15px;
+  z-index:5000;
+  color:white;
 }
 
 #avatar{
-  width:40px;
-  height:40px;
+  width:36px;
+  height:36px;
   border-radius:50%;
   object-fit:cover;
+  border:2px solid rgba(255,255,255,0.4);
 }
 
-/* feed */
-#feed{
-  padding:15px;
+/* counter */
+#counter{
+  position:fixed;
+  top:60px;
+  width:100%;
+  text-align:center;
+  color:white;
+  z-index:10;
 }
 
-.msg{
-  background:rgba(255,255,255,0.06);
-  padding:12px;
-  border-radius:16px;
-  margin-bottom:10px;
-}
-
-.msg .name{
-  font-weight:600;
-  font-size:13px;
-  opacity:0.7;
+/* dots */
+.dot{
+  position:absolute;
+  border-radius:50%;
+  z-index:5;
 }
 
 /* FAB */
@@ -100,75 +67,141 @@ button{
   border-radius:50%;
   background:linear-gradient(135deg,#6a5cff,#b16cff);
   display:flex;
-  align-items:center;
   justify-content:center;
+  align-items:center;
+  color:white;
   font-size:28px;
+  z-index:3000;
 }
 
-/* modal */
-#modal{
+/* MENU */
+#menu{
+  position:fixed;
+  bottom:100px;
+  right:20px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(30px);
+  transition:0.3s;
+}
+
+#menu.show{
+  opacity:1;
+  pointer-events:auto;
+  transform:translateY(0);
+}
+
+.item{
+  padding:12px 16px;
+  border-radius:16px;
+  background:rgba(0,0,0,0.4);
+  color:white;
+}
+
+/* MODAL */
+#modal, #authModal, #profileModal{
   position:fixed;
   inset:0;
   display:none;
   justify-content:center;
   align-items:center;
-  backdrop-filter:blur(20px);
+  backdrop-filter:blur(15px);
+  z-index:9999;
 }
 
 .card{
   width:85%;
   padding:20px;
-  background:rgba(0,0,0,0.6);
   border-radius:20px;
+  background:rgba(0,0,0,0.6);
+  color:white;
+}
+
+input{
+  width:100%;
+  margin-top:10px;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  background:rgba(255,255,255,0.1);
+  color:white;
+}
+
+button{
+  margin-top:15px;
+  padding:12px;
+  border:none;
+  border-radius:16px;
+  background:linear-gradient(135deg,#6a5cff,#b16cff);
+  color:white;
 }
 </style>
 </head>
 
 <body>
 
-<!-- AUTH -->
-<div id="auth">
-  <h2>✨ Neon App</h2>
-  <input id="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Password">
-  <input id="nameInput" placeholder="Tên hiển thị">
-  <div style="display:flex; gap:10px;">
-    <button onclick="register()">Đăng ký</button>
-    <button onclick="login()">Đăng nhập</button>
-  </div>
+<!-- PROFILE -->
+<div id="profileBox" onclick="openProfile()">
+  <img id="avatar">
+  <div id="name"></div>
 </div>
 
-<!-- APP -->
-<div id="app">
+<div id="counter">20 / 20</div>
 
-  <div id="header">
-    <img id="avatar">
-    <div id="name"></div>
-    <div style="margin-left:auto;" onclick="logout()">🚪</div>
-  </div>
-
-  <div id="feed"></div>
-
-</div>
-
-<!-- FAB -->
-<div id="fab" onclick="openModal()">+</div>
-
-<!-- MODAL -->
+<!-- MESSAGE -->
 <div id="modal">
   <div class="card">
-    <input id="msgInput" placeholder="Viết gì đó...">
-    <input type="file" id="file">
+    <div id="msg"></div>
+    <input id="input" placeholder="Nhập tin...">
     <button onclick="send()">Gửi</button>
   </div>
 </div>
 
+<!-- AUTH -->
+<div id="authModal">
+  <div class="card">
+    <h3 id="authTitle">Đăng nhập</h3>
+    <input id="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+    <input id="displayName" placeholder="Tên hiển thị (đăng ký)">
+    <button id="authBtn"></button>
+  </div>
+</div>
+
+<!-- PROFILE EDIT -->
+<div id="profileModal">
+  <div class="card">
+    <h3>Profile</h3>
+    <input type="file" id="file">
+    <input id="newName" placeholder="Tên mới">
+    <button onclick="updateProfile()">Cập nhật</button>
+  </div>
+</div>
+
+<div id="fab">+</div>
+<div id="menu"></div>
+
 <!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+import {
+  getAuth, createUserWithEmailAndPassword,
+  signInWithEmailAndPassword, signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+import {
+  getFirestore, collection, addDoc,
+  onSnapshot, query, orderBy,
+  doc, setDoc, getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+import {
+  getStorage, ref, uploadBytes, getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 const app = initializeApp({
   apiKey:"AIza...",
@@ -184,26 +217,24 @@ const storage=getStorage(app);
 window.auth=auth;
 window.db=db;
 window.storage=storage;
-window.createUserWithEmailAndPassword=createUserWithEmailAndPassword;
-window.signInWithEmailAndPassword=signInWithEmailAndPassword;
-window.signOut=signOut;
-window.updateProfile=updateProfile;
-window.collection=collection;
-window.addDoc=addDoc;
-window.query=query;
-window.orderBy=orderBy;
-window.onSnapshot=onSnapshot;
-window.doc=doc;
-window.setDoc=setDoc;
-window.getDoc=getDoc;
 window.ref=ref;
 window.uploadBytes=uploadBytes;
 window.getDownloadURL=getDownloadURL;
+window.addDoc=addDoc;
+window.collection=collection;
+window.doc=doc;
+window.setDoc=setDoc;
+window.getDoc=getDoc;
+window.signOut=signOut;
+window.createUserWithEmailAndPassword=createUserWithEmailAndPassword;
+window.signInWithEmailAndPassword=signInWithEmailAndPassword;
 
+/* AUTH STATE */
 onAuthStateChanged(auth, async(user)=>{
+  window.currentUser=user;
+
   if(user){
-    document.getElementById("auth").style.display="none";
-    document.getElementById("app").style.display="block";
+    document.getElementById("profileBox").style.display="flex";
 
     let snap=await getDoc(doc(db,"users",user.uid));
     let data=snap.data();
@@ -211,74 +242,112 @@ onAuthStateChanged(auth, async(user)=>{
     document.getElementById("name").innerText=data.name;
     document.getElementById("avatar").src=data.avatar;
 
-    loadFeed();
   }else{
-    document.getElementById("auth").style.display="block";
-    document.getElementById("app").style.display="none";
+    document.getElementById("profileBox").style.display="none";
   }
+
+  renderMenu();
 });
 </script>
 
 <script>
+const fab=document.getElementById("fab");
+const menu=document.getElementById("menu");
+
+fab.onclick=()=>{
+  menu.classList.toggle("show");
+};
+
+/* MENU */
+function renderMenu(){
+  if(window.currentUser){
+    menu.innerHTML=`
+      <div class="item" onclick="openProfile()">Profile</div>
+      <div class="item" onclick="logout()">Logout</div>
+    `;
+  }else{
+    menu.innerHTML=`
+      <div class="item" onclick="openLogin()">Đăng nhập</div>
+      <div class="item" onclick="openRegister()">Đăng ký</div>
+    `;
+  }
+}
+
+/* AUTH UI */
+function openLogin(){
+  authModal.style.display="flex";
+  authTitle.innerText="Đăng nhập";
+  authBtn.innerText="Login";
+  authBtn.onclick=login;
+}
+
+function openRegister(){
+  authModal.style.display="flex";
+  authTitle.innerText="Đăng ký";
+  authBtn.innerText="Register";
+  authBtn.onclick=register;
+}
+
+/* AUTH */
+async function login(){
+  await signInWithEmailAndPassword(auth,email.value,password.value);
+  authModal.style.display="none";
+}
+
 async function register(){
   let userCred=await createUserWithEmailAndPassword(auth,email.value,password.value);
   let user=userCred.user;
 
   await setDoc(doc(db,"users",user.uid),{
-    name:nameInput.value,
+    name:displayName.value,
     avatar:"https://i.pravatar.cc/150"
   });
-}
 
-async function login(){
-  await signInWithEmailAndPassword(auth,email.value,password.value);
+  authModal.style.display="none";
 }
 
 async function logout(){
   await signOut(auth);
 }
 
-/* feed realtime */
-function loadFeed(){
-  const q=query(collection(db,"messages"),orderBy("time","desc"));
-
-  onSnapshot(q,(snap)=>{
-    let html="";
-    snap.forEach(doc=>{
-      let d=doc.data();
-      html+=`
-        <div class="msg">
-          <div class="name">${d.name}</div>
-          <div>${d.text}</div>
-        </div>
-      `;
-    });
-    document.getElementById("feed").innerHTML=html;
-  });
+/* PROFILE */
+function openProfile(){
+  profileModal.style.display="flex";
 }
 
-/* modal */
-function openModal(){
-  modal.style.display="flex";
-}
-
-/* send */
-async function send(){
+async function updateProfile(){
   let user=auth.currentUser;
   let file=document.getElementById("file").files[0];
-  let avatar="";
+  let name=document.getElementById("newName").value;
+
+  let avatarUrl=document.getElementById("avatar").src;
 
   if(file){
     let r=ref(storage,"avatars/"+user.uid);
     await uploadBytes(r,file);
-    avatar=await getDownloadURL(r);
+    avatarUrl=await getDownloadURL(r);
   }
+
+  await setDoc(doc(db,"users",user.uid),{
+    name:name,
+    avatar:avatarUrl
+  });
+
+  location.reload();
+}
+
+/* MESSAGE */
+async function send(){
+  let text=input.value;
+  let user=auth.currentUser;
+
+  if(!user) return alert("Login trước");
 
   let snap=await getDoc(doc(db,"users",user.uid));
   let data=snap.data();
 
-  await addDoc(collection(db,"messages"),{
-    text:msgInput.value,
+  await addDoc(collection(db,"thoughts"),{
+    msg:text,
     name:data.name,
     avatar:data.avatar,
     time:Date.now()
