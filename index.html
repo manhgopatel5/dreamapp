@@ -6,6 +6,7 @@
 body{
   margin:0;
   overflow:hidden;
+  position:relative;
 }
 
 /* nền */
@@ -16,17 +17,29 @@ body::after{
   background:url("IMG_0577.jpeg") no-repeat center;
   background-size:contain;
   z-index:0;
+  pointer-events:none;
 }
 
 /* dot */
 .dot{
   position:absolute;
   border-radius:50%;
-  z-index:2;
+  z-index:5; /* 👈 nổi lên */
 }
 
-/* modal */
+/* modal đọc */
 #modal{
+  position:fixed;
+  inset:0;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  backdrop-filter:blur(12px);
+  z-index:9999; /* 👈 trên cùng */
+}
+
+/* modal auth */
+#authModal{
   position:fixed;
   inset:0;
   display:none;
@@ -41,6 +54,7 @@ body::after{
   padding:20px;
   border-radius:20px;
   background:white;
+  text-align:center;
 }
 
 /* FAB */
@@ -59,6 +73,7 @@ body::after{
   justify-content:center;
   align-items:center;
   z-index:1000;
+  cursor:pointer;
 }
 
 /* menu */
@@ -71,12 +86,15 @@ body::after{
   gap:10px;
   opacity:0;
   pointer-events:none;
+  transform:translateY(20px);
   transition:0.3s;
+  z-index:1000;
 }
 
 #menu.show{
   opacity:1;
   pointer-events:auto;
+  transform:translateY(0);
 }
 
 .item{
@@ -90,18 +108,17 @@ body::after{
 
 <body>
 
+<!-- modal đọc -->
 <div id="modal">
   <div class="card">
     <div id="msg"></div>
-    <input id="input" placeholder="Viết gì đó">
-    <button onclick="send()">SEND</button>
   </div>
 </div>
 
-<!-- AUTH MODAL -->
-<div id="authModal" style="display:none; position:fixed; inset:0; backdrop-filter:blur(10px); z-index:9999; justify-content:center; align-items:center;">
+<!-- modal auth -->
+<div id="authModal">
   <div class="card">
-    <h3 id="authTitle">Đăng nhập</h3>
+    <h3>Đăng nhập / Đăng ký</h3>
     <input id="email" placeholder="Email"><br><br>
     <input id="password" type="password" placeholder="Password"><br><br>
     <button onclick="login()">Login</button>
@@ -121,7 +138,7 @@ body::after{
 <!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -135,15 +152,11 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// global
-window.db=db;
-window.addDoc=addDoc;
-window.collection=collection;
-window.auth=auth;
-window.createUserWithEmailAndPassword=createUserWithEmailAndPassword;
-window.signInWithEmailAndPassword=signInWithEmailAndPassword;
+window.auth = auth;
+window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+window.signInWithEmailAndPassword = signInWithEmailAndPassword;
 
-// realtime dot
+// realtime dots
 let dots=[];
 const q=query(collection(db,"thoughts"),orderBy("time","desc"));
 
@@ -161,6 +174,7 @@ onSnapshot(q,(snapshot)=>{
     d.style.width=size+"px";
     d.style.height=size+"px";
     d.style.background="white";
+
     d.style.left=Math.random()*window.innerWidth+"px";
     d.style.top=Math.random()*window.innerHeight+"px";
 
@@ -177,36 +191,38 @@ onSnapshot(q,(snapshot)=>{
 
 <!-- APP -->
 <script>
-async function send(){
-  let text=input.value;
-  if(text.trim()!==""){
-    await addDoc(collection(db,"thoughts"),{
-      msg:text,
-      time:Date.now()
-    });
-  }
-  modal.style.display="none";
-}
+const fab = document.getElementById("fab");
+const menu = document.getElementById("menu");
+
+fab.onclick = ()=>{
+  menu.classList.toggle("show");
+  fab.style.transform = menu.classList.contains("show") ? "rotate(45deg)" : "rotate(0)";
+};
 
 function openAuth(){
   document.getElementById("authModal").style.display="flex";
 }
 
-async function register(){
-  await createUserWithEmailAndPassword(auth,email.value,password.value);
-  alert("Đăng ký thành công");
-}
-
+// login
 async function login(){
   await signInWithEmailAndPassword(auth,email.value,password.value);
   alert("Đăng nhập thành công");
 }
 
-fab.onclick=()=>{
-  menu.classList.toggle("show");
+// register
+async function register(){
+  await createUserWithEmailAndPassword(auth,email.value,password.value);
+  alert("Đăng ký thành công");
+}
+
+// đóng modal
+document.getElementById("modal").onclick=(e)=>{
+  if(e.target.id==="modal"){
+    modal.style.display="none";
+  }
 };
 
-authModal.onclick=(e)=>{
+document.getElementById("authModal").onclick=(e)=>{
   if(e.target.id==="authModal"){
     authModal.style.display="none";
   }
