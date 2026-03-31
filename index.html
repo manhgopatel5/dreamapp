@@ -6,79 +6,68 @@
 <style>
 body {
   margin:0;
-  overflow:hidden;
   font-family:-apple-system,BlinkMacSystemFont,sans-serif;
-}
-
-/* background */
-body::after {
-  content:"";
-  position:fixed;
-  inset:0;
-  background:url("IMG_0577.jpeg") no-repeat center;
-  background-size:contain;
-  z-index:0;
-}
-
-/* counter */
-#counter {
-  position:fixed;
-  top:60px;
-  width:100%;
-  text-align:center;
-  font-size:18px;
-  letter-spacing:4px;
+  background:#0f0f1a;
   color:white;
-  z-index:10;
 }
 
-/* dots */
-.dot {
-  position:absolute;
-  border-radius:50%;
-  z-index:5;
-}
-
-/* modal */
-#modal, #authModal{
+/* profile bar */
+#profileBar{
   position:fixed;
-  inset:0;
-  display:none;
-  justify-content:center;
+  top:10px;
+  left:10px;
+  display:flex;
   align-items:center;
-  backdrop-filter:blur(15px);
+  gap:10px;
+  z-index:2000;
+}
+
+#avatar{
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#444;
+}
+
+#name{
+  font-weight:600;
+}
+
+/* profile page */
+#profilePage{
+  position:fixed;
+  inset:0;
+  background:#111;
+  display:none;
   z-index:9999;
+  padding:20px;
 }
 
-.card {
-  width:85%;
-  padding:30px;
-  border-radius:30px;
-  background:rgba(255,255,255,0.12);
-  backdrop-filter:blur(20px);
-  color:white;
-  text-align:center;
-}
-
-/* input */
-input {
-  width:100%;
-  margin-top:20px;
-  padding:12px;
-  border:none;
-  border-radius:12px;
-  background:rgba(255,255,255,0.1);
-  color:white;
+#profilePage img{
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  object-fit:cover;
 }
 
 /* button */
-button {
-  margin-top:20px;
-  padding:12px 25px;
+button{
+  margin-top:15px;
+  padding:10px 20px;
   border:none;
-  border-radius:20px;
+  border-radius:12px;
   background:linear-gradient(135deg,#6a5cff,#b16cff);
   color:white;
+}
+
+/* input */
+input{
+  margin-top:10px;
+  padding:10px;
+  width:100%;
+  border-radius:10px;
+  border:none;
 }
 
 /* FAB */
@@ -89,310 +78,210 @@ button {
   width:60px;
   height:60px;
   border-radius:50%;
-  background:rgba(255,255,255,0.15);
-  backdrop-filter:blur(12px);
-  color:white;
-  font-size:28px;
+  background:#6a5cff;
   display:flex;
   justify-content:center;
   align-items:center;
-  z-index:3000;
-  cursor:pointer;
+  font-size:28px;
 }
 
-/* MENU */
+/* menu */
 #menu{
   position:fixed;
   bottom:100px;
   right:20px;
-  display:flex;
+  display:none;
   flex-direction:column;
-  gap:12px;
-  opacity:0;
-  pointer-events:none;
-  transform:translateY(30px);
-  transition:0.3s;
-  z-index:2000;
+  gap:10px;
 }
 
-#menu.show{
-  opacity:1;
-  pointer-events:auto;
-  transform:translateY(0);
-}
-
-/* item */
 .item{
-  display:flex;
-  align-items:center;
-  gap:14px;
-  padding:12px 16px;
-  border-radius:18px;
-  background:rgba(0,0,0,0.35);
-  backdrop-filter:blur(16px);
-  color:white;
-  font-size:14px;
-  font-weight:500;
-  box-shadow:0 10px 30px rgba(0,0,0,0.5);
-  transition:0.25s;
-}
-
-.item .icon{
-  width:38px;
-  height:38px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:18px;
-  background:rgba(255,255,255,0.15);
-}
-
-.item .text{
-  display:flex;
-  flex-direction:column;
-}
-
-.item .title{
-  font-size:14px;
-}
-
-.item .sub{
-  font-size:11px;
-  opacity:0.6;
-}
-
-.item:active{
-  transform:scale(0.95);
-}
-
-.item.primary{
-  background:linear-gradient(135deg,#6a5cff,#b16cff);
+  background:#222;
+  padding:12px;
+  border-radius:12px;
 }
 </style>
 </head>
 
 <body>
 
-<div id="counter">20 / 20</div>
-
-<!-- MESSAGE MODAL -->
-<div id="modal">
-  <div class="card">
-    <div id="msg"></div>
-    <input id="input" placeholder="Thì thầm điều gì đó...">
-    <button onclick="send()">SEND</button>
-  </div>
+<!-- PROFILE BAR -->
+<div id="profileBar" onclick="openProfile()" style="display:none;">
+  <img id="avatar" src="">
+  <div id="name"></div>
 </div>
 
-<!-- AUTH MODAL -->
-<div id="authModal">
-  <div class="card">
-    <h3 id="authTitle">🔐 Đăng nhập</h3>
-    <input id="email" placeholder="Email">
-    <input id="password" type="password" placeholder="Password">
-    <button id="authBtn">Đăng nhập</button>
-  </div>
+<!-- PROFILE PAGE -->
+<div id="profilePage">
+  <h2>👤 Profile</h2>
+  <img id="profileAvatar">
+  <input type="file" id="file">
+  <input id="newName" placeholder="Tên mới">
+  <button onclick="updateProfile()">Cập nhật</button>
+  <button onclick="closeProfile()">Đóng</button>
+</div>
+
+<!-- AUTH -->
+<div id="auth">
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+  <input id="displayName" placeholder="Tên hiển thị">
+  <button onclick="register()">Đăng ký</button>
+  <button onclick="login()">Đăng nhập</button>
 </div>
 
 <!-- FAB -->
-<div id="fab">+</div>
+<div id="fab" onclick="toggleMenu()">+</div>
 
 <!-- MENU -->
-<div id="menu">
-
-  <div class="item primary" onclick="openLogin()">
-    <div class="icon">🔐</div>
-    <div class="text">
-      <div class="title">Đăng nhập</div>
-      <div class="sub">Truy cập tài khoản</div>
-    </div>
-  </div>
-
-  <div class="item" onclick="openRegister()">
-    <div class="icon">✨</div>
-    <div class="text">
-      <div class="title">Đăng ký</div>
-      <div class="sub">Tạo tài khoản mới</div>
-    </div>
-  </div>
-
-</div>
+<div id="menu"></div>
 
 <!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIza...",
   authDomain: "dreamapp-ae631.firebaseapp.com",
   projectId: "dreamapp-ae631",
+  storageBucket: "dreamapp-ae631.appspot.com"
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
 const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
 
-window.messages = [];
-
-const q = query(collection(db,"thoughts"), orderBy("time","desc"));
-
-onSnapshot(q, (snapshot)=>{
-  window.messages = [];
-  snapshot.forEach(doc=>{
-    window.messages.push(doc.data().msg);
-  });
-});
-
-window.db=db;
-window.addDoc=addDoc;
-window.collection=collection;
 window.auth=auth;
+window.db=db;
+window.storage=storage;
 window.createUserWithEmailAndPassword=createUserWithEmailAndPassword;
 window.signInWithEmailAndPassword=signInWithEmailAndPassword;
-</script>
+window.updateProfileAuth=updateProfile;
+window.onAuthStateChanged=onAuthStateChanged;
+window.signOut=signOut;
+window.doc=doc;
+window.setDoc=setDoc;
+window.getDoc=getDoc;
+window.ref=ref;
+window.uploadBytes=uploadBytes;
+window.getDownloadURL=getDownloadURL;
+window.addDoc=addDoc;
+window.collection=collection;
 
-<!-- APP -->
-<script>
-const fab = document.getElementById("fab");
-const menu = document.getElementById("menu");
-const modal = document.getElementById("modal");
-const authModal = document.getElementById("authModal");
-const counter = document.getElementById("counter");
-const msg = document.getElementById("msg");
-const input = document.getElementById("input");
-const email = document.getElementById("email");
-const password = document.getElementById("password");
-const authBtn = document.getElementById("authBtn");
+/* detect login */
+onAuthStateChanged(auth, async(user)=>{
+  if(user){
+    document.getElementById("auth").style.display="none";
+    document.getElementById("profileBar").style.display="flex";
 
-fab.addEventListener("click", ()=>{
-  menu.classList.toggle("show");
-  fab.innerHTML = menu.classList.contains("show") ? "✕" : "+";
-});
+    let snap = await getDoc(doc(db,"users",user.uid));
 
-/* LOGIN / REGISTER SWITCH */
-function openLogin(){
-  authModal.style.display = "flex";
-  document.getElementById("authTitle").innerText = "🔐 Đăng nhập";
-  authBtn.innerText = "Đăng nhập";
-  authBtn.onclick = login;
-}
-
-function openRegister(){
-  authModal.style.display = "flex";
-  document.getElementById("authTitle").innerText = "✨ Đăng ký";
-  authBtn.innerText = "Tạo tài khoản";
-  authBtn.onclick = register;
-}
-
-/* dots */
-let dots=[];
-let available=20;
-
-for(let i=0;i<20;i++){
-  let d=document.createElement("div");
-  d.used=false;
-
-  let hue=Math.random()*360;
-  let size=Math.random()*14+10;
-
-  d.className="dot";
-  d.style.width=size+"px";
-  d.style.height=size+"px";
-  d.style.background=`hsl(${hue},70%,70%)`;
-
-  d.x=Math.random()*window.innerWidth;
-  d.y=Math.random()*window.innerHeight;
-  d.tx=Math.random()*window.innerWidth;
-  d.ty=Math.random()*window.innerHeight;
-
-  d.style.left=d.x+"px";
-  d.style.top=d.y+"px";
-
-  d.onclick=()=>open(d);
-
-  document.body.appendChild(d);
-  dots.push(d);
-}
-
-function animate(){
-  dots.forEach(d=>{
-    d.x+=(d.tx-d.x)*0.01;
-    d.y+=(d.ty-d.y)*0.01;
-
-    if(Math.abs(d.x-d.tx)<1){
-      d.tx=Math.random()*window.innerWidth;
-      d.ty=Math.random()*window.innerHeight;
+    if(snap.exists()){
+      let data=snap.data();
+      document.getElementById("name").innerText=data.name;
+      document.getElementById("avatar").src=data.avatar;
+      document.getElementById("profileAvatar").src=data.avatar;
     }
 
-    d.style.left=d.x+"px";
-    d.style.top=d.y+"px";
-  });
-  requestAnimationFrame(animate);
-}
-animate();
-
-function open(d){
-  if(d.used) return;
-
-  d.used=true;
-  d.style.opacity=0;
-  setTimeout(()=>d.remove(),300);
-
-  available--;
-  counter.innerText=available+" / 20";
-
-  msg.innerText = window.messages[Math.floor(Math.random()*window.messages.length)] 
-    || "Chưa có ai gửi...";
-
-  modal.style.display="flex";
-}
-
-async function send(){
-  let text=input.value;
-
-  if(text.trim()!==""){
-    await addDoc(collection(db,"thoughts"),{
-      msg:text,
-      time:Date.now()
-    });
+    renderMenu(true);
+  }else{
+    document.getElementById("auth").style.display="block";
+    document.getElementById("profileBar").style.display="none";
+    renderMenu(false);
   }
+});
+</script>
 
-  modal.style.display="none";
-  input.value="";
-}
+<script>
+const menu = document.getElementById("menu");
 
-/* AUTH */
-async function login(){
-  try{
-    await signInWithEmailAndPassword(auth,email.value,password.value);
-    alert("Đăng nhập thành công ✨");
-    authModal.style.display="none";
-  }catch{
-    alert("Sai tài khoản hoặc mật khẩu");
+/* menu */
+function renderMenu(logged){
+  if(logged){
+    menu.innerHTML=`
+      <div class="item" onclick="openProfile()">Profile</div>
+      <div class="item" onclick="logout()">Logout</div>
+    `;
+  }else{
+    menu.innerHTML=`
+      <div class="item">Chưa đăng nhập</div>
+    `;
   }
 }
 
+function toggleMenu(){
+  menu.style.display = menu.style.display==="flex"?"none":"flex";
+}
+
+/* auth */
 async function register(){
-  try{
-    await createUserWithEmailAndPassword(auth,email.value,password.value);
-    alert("Tạo tài khoản thành công 🚀");
-    authModal.style.display="none";
-  }catch{
-    alert("Email đã tồn tại hoặc lỗi");
-  }
+  let userCred = await createUserWithEmailAndPassword(auth,email.value,password.value);
+  let user=userCred.user;
+
+  await updateProfileAuth(user,{
+    displayName:displayName.value
+  });
+
+  await setDoc(doc(db,"users",user.uid),{
+    name:displayName.value,
+    avatar:"https://i.pravatar.cc/150"
+  });
 }
 
-/* close modal */
-modal.onclick=(e)=>{
-  if(e.target.id==="modal") modal.style.display="none";
-};
+async function login(){
+  await signInWithEmailAndPassword(auth,email.value,password.value);
+}
 
-authModal.onclick=(e)=>{
-  if(e.target.id==="authModal") authModal.style.display="none";
-};
+async function logout(){
+  await signOut(auth);
+}
+
+/* profile page */
+function openProfile(){
+  document.getElementById("profilePage").style.display="block";
+}
+
+function closeProfile(){
+  document.getElementById("profilePage").style.display="none";
+}
+
+/* update profile */
+async function updateProfile(){
+  let user=auth.currentUser;
+  let file=document.getElementById("file").files[0];
+  let name=document.getElementById("newName").value;
+
+  let avatarUrl="";
+
+  if(file){
+    let storageRef = ref(storage,"avatars/"+user.uid);
+    await uploadBytes(storageRef,file);
+    avatarUrl = await getDownloadURL(storageRef);
+  }
+
+  await setDoc(doc(db,"users",user.uid),{
+    name:name || user.displayName,
+    avatar:avatarUrl || document.getElementById("avatar").src
+  });
+
+  alert("Updated!");
+}
+
+/* save message */
+async function sendMessage(text){
+  let user=auth.currentUser;
+  if(!user) return;
+
+  await addDoc(collection(db,"messages"),{
+    uid:user.uid,
+    text:text,
+    time:Date.now()
+  });
+}
 </script>
 
 </body>
