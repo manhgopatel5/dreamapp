@@ -7,14 +7,16 @@ body {
   margin: 0;
   overflow: hidden;
   font-family: -apple-system, sans-serif;
-  background: url("IMG_0577.jpeg") no-repeat center/cover;
+  background: url("IMG_0577.jpeg") no-repeat center;
+  background-size: contain; /* 👈 QUAN TRỌNG */
+  background-color: #000; /* nền đen nếu dư khoảng trống */
 }
 body::before {
   content: "";
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.15); /* 👈 làm tối nhẹ cho nổi dot */
-  backdrop-filter: blur(05px);
+  background: rgba(0,0,0,0.02); /* 👈 làm tối nhẹ cho nổi dot */
+  backdrop-filter: blur(01px);
   pointer-events: none;
 }
 /* counter */
