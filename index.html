@@ -29,7 +29,6 @@ body::after {
   font-size:18px;
   letter-spacing:4px;
   color:white;
-  text-shadow:0 0 10px rgba(255,255,255,0.7);
   z-index:10;
 }
 
@@ -55,18 +54,10 @@ body::after {
   width:85%;
   padding:30px;
   border-radius:30px;
-
   background:rgba(255,255,255,0.12);
   backdrop-filter:blur(20px);
-
-  border:1px solid rgba(255,255,255,0.2);
-
-  box-shadow:
-    0 10px 40px rgba(0,0,0,0.4),
-    inset 0 0 20px rgba(255,255,255,0.1);
-
-  text-align:center;
   color:white;
+  text-align:center;
 }
 
 /* input */
@@ -88,7 +79,6 @@ button {
   border-radius:20px;
   background:linear-gradient(135deg,#6a5cff,#b16cff);
   color:white;
-  box-shadow:0 0 20px rgba(150,100,255,0.6);
 }
 
 /* FAB */
@@ -99,21 +89,15 @@ button {
   width:60px;
   height:60px;
   border-radius:50%;
-
   background:rgba(255,255,255,0.15);
   backdrop-filter:blur(12px);
-
   color:white;
-  font-size:30px;
-
+  font-size:28px;
   display:flex;
   justify-content:center;
   align-items:center;
-
-  z-index:1000;
+  z-index:3000;
   cursor:pointer;
-
-  transition:0.3s;
 }
 
 /* MENU */
@@ -121,16 +105,14 @@ button {
   position:fixed;
   bottom:100px;
   right:20px;
-
   display:flex;
   flex-direction:column;
-  gap:14px;
-
+  gap:12px;
   opacity:0;
   pointer-events:none;
   transform:translateY(30px);
-
   transition:0.3s;
+  z-index:2000;
 }
 
 #menu.show{
@@ -139,72 +121,68 @@ button {
   transform:translateY(0);
 }
 
-/* ITEM XỊN */
+/* 🔥 NEW ITEM STYLE */
 .item{
   display:flex;
   align-items:center;
-  gap:12px;
+  gap:14px;
 
-  padding:14px 18px;
-  border-radius:999px;
+  padding:12px 16px;
+  border-radius:18px;
 
-  background:rgba(255,255,255,0.08);
-  backdrop-filter:blur(14px);
-
-  border:1px solid rgba(255,255,255,0.15);
+  background:rgba(0,0,0,0.35);
+  backdrop-filter:blur(16px);
 
   color:white;
+  font-size:14px;
   font-weight:500;
 
   box-shadow:
-    0 6px 25px rgba(0,0,0,0.35),
-    inset 0 0 10px rgba(255,255,255,0.08);
+    0 10px 30px rgba(0,0,0,0.5);
 
   transition:0.25s;
 }
 
-/* icon */
-.item span{
-  width:32px;
-  height:32px;
+/* icon circle */
+.item .icon{
+  width:38px;
+  height:38px;
   border-radius:50%;
 
   display:flex;
   align-items:center;
   justify-content:center;
 
+  font-size:18px;
   background:rgba(255,255,255,0.15);
 }
 
-/* hover */
-.item:active{
-  transform:scale(0.92);
+/* text block */
+.item .text{
+  display:flex;
+  flex-direction:column;
 }
 
-/* PRIMARY (login) */
+/* title */
+.item .title{
+  font-size:14px;
+}
+
+/* subtitle */
+.item .sub{
+  font-size:11px;
+  opacity:0.6;
+}
+
+/* hover effect */
+.item:active{
+  transform:scale(0.95);
+  background:rgba(255,255,255,0.15);
+}
+
+/* highlight login */
 .item.primary{
   background:linear-gradient(135deg,#6a5cff,#b16cff);
-  border:none;
-
-  box-shadow:
-    0 0 25px rgba(150,100,255,0.7),
-    0 0 50px rgba(150,100,255,0.3);
-}
-
-/* animation */
-#menu.show .item{
-  animation:slideUp 0.4s ease forwards;
-}
-
-@keyframes slideUp{
-  from{
-    opacity:0;
-    transform:translateY(20px);
-  }
-  to{
-    opacity:1;
-    transform:translateY(0);
-  }
 }
 </style>
 </head>
@@ -238,20 +216,34 @@ button {
 
 <!-- MENU -->
 <div id="menu">
+
   <div class="item primary" onclick="openAuth()">
-    <span>🔐</span> Đăng nhập / Đăng ký
+    <div class="icon">🔐</div>
+    <div class="text">
+      <div class="title">Đăng nhập</div>
+      <div class="sub">Truy cập tài khoản</div>
+    </div>
   </div>
 
   <div class="item">
-    <span>⚙️</span> Cài đặt
+    <div class="icon">⚙️</div>
+    <div class="text">
+      <div class="title">Cài đặt</div>
+      <div class="sub">Tuỳ chỉnh ứng dụng</div>
+    </div>
   </div>
 
   <div class="item">
-    <span>📜</span> Điều khoản
+    <div class="icon">📜</div>
+    <div class="text">
+      <div class="title">Điều khoản</div>
+      <div class="sub">Chính sách & bảo mật</div>
+    </div>
   </div>
+
 </div>
 
-<!-- FIREBASE -->
+<!-- FIREBASE giữ nguyên -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -288,8 +280,22 @@ window.signInWithEmailAndPassword=signInWithEmailAndPassword;
 
 <!-- APP -->
 <script>
-let popSound = new Audio("https://www.soundjay.com/buttons/sounds/button-16.mp3");
+const fab = document.getElementById("fab");
+const menu = document.getElementById("menu");
+const modal = document.getElementById("modal");
+const authModal = document.getElementById("authModal");
+const counter = document.getElementById("counter");
+const msg = document.getElementById("msg");
+const input = document.getElementById("input");
+const email = document.getElementById("email");
+const password = document.getElementById("password");
 
+fab.addEventListener("click", ()=>{
+  menu.classList.toggle("show");
+  fab.innerHTML = menu.classList.contains("show") ? "✕" : "+";
+});
+
+/* dots */
 let dots=[];
 let available=20;
 
@@ -304,7 +310,6 @@ for(let i=0;i<20;i++){
   d.style.width=size+"px";
   d.style.height=size+"px";
   d.style.background=`hsl(${hue},70%,70%)`;
-  d.style.boxShadow=`0 0 20px hsl(${hue},80%,70%)`;
 
   d.x=Math.random()*window.innerWidth;
   d.y=Math.random()*window.innerHeight;
@@ -341,20 +346,15 @@ function open(d){
   if(d.used) return;
 
   d.used=true;
-
-  popSound.currentTime=0;
-  popSound.play().catch(()=>{});
-
   d.style.opacity=0;
   setTimeout(()=>d.remove(),300);
 
   available--;
   counter.innerText=available+" / 20";
 
-  let randomMsg = window.messages[Math.floor(Math.random()*window.messages.length)] 
+  msg.innerText = window.messages[Math.floor(Math.random()*window.messages.length)] 
     || "Chưa có ai gửi...";
 
-  msg.innerText=randomMsg;
   modal.style.display="flex";
 }
 
@@ -372,29 +372,20 @@ async function send(){
   input.value="";
 }
 
-/* FAB */
-fab.onclick=()=>{
-  menu.classList.toggle("show");
-  fab.style.transform = menu.classList.contains("show") ? "rotate(45deg)" : "rotate(0)";
-};
-
 function openAuth(){
   authModal.style.display="flex";
 }
 
-/* login */
 async function login(){
   await signInWithEmailAndPassword(auth,email.value,password.value);
   alert("Đăng nhập thành công");
 }
 
-/* register */
 async function register(){
   await createUserWithEmailAndPassword(auth,email.value,password.value);
   alert("Đăng ký thành công");
 }
 
-/* close */
 modal.onclick=(e)=>{
   if(e.target.id==="modal") modal.style.display="none";
 };
