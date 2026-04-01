@@ -337,7 +337,141 @@ function animate(){
   requestAnimationFrame(animate);
 }
 animate();
-</script>
+/* ================= GAME SYSTEM ================= */
 
+let currentUser = null;
+let userData = null;
+
+/* OVERRIDE BUTTON AUTH */
+authBtn.onclick = () => {
+  if(authTitle.innerText === "Đăng ký"){
+    register();
+  }else{
+    login();
+  }
+};
+
+function register(){
+  let inputs = authModal.querySelectorAll("input");
+  let user = inputs[0].value;
+  let pass = inputs[1].value;
+
+  if(!user || !pass) return alert("Nhập thiếu");
+
+  let data = {
+    pass:pass,
+    coin:100,
+    inventory:[],
+    equipped:null
+  };
+
+  localStorage.setItem("user_"+user, JSON.stringify(data));
+  alert("Đăng ký OK");
+}
+
+function login(){
+  let inputs = authModal.querySelectorAll("input");
+  let user = inputs[0].value;
+  let pass = inputs[1].value;
+
+  let data = JSON.parse(localStorage.getItem("user_"+user));
+
+  if(!data || data.pass !== pass){
+    alert("Sai tài khoản");
+    return;
+  }
+
+  currentUser = user;
+  userData = data;
+
+  startGame();
+}
+
+function startGame(){
+  authModal.style.display="none";
+
+  document.getElementById("gameScreen").style.display="block";
+  document.getElementById("title").style.display="none";
+
+  document.getElementById("g_name").innerText = currentUser;
+  document.getElementById("g_coin").innerText = userData.coin;
+
+  updateAvatar();
+}
+
+/* SHOP */
+function openShop(){
+  document.getElementById("shopScreen").style.display="block";
+}
+
+function closeShop(){
+  document.getElementById("shopScreen").style.display="none";
+}
+
+function buy(item){
+  userData.inventory.push(item);
+  userData.equipped = item;
+
+  save();
+  updateAvatar();
+}
+
+/* AVATAR */
+function updateAvatar(){
+  let avatar = document.getElementById("g_avatar");
+
+  if(userData.equipped === "sword"){
+    avatar.src="https://i.imgur.com/8Qf6R0p.png";
+  }else if(userData.equipped === "staff"){
+    avatar.src="https://i.imgur.com/tX5XG6P.png";
+  }else{
+    avatar.src="https://i.imgur.com/6X4GQ0L.png";
+  }
+}
+
+/* SAVE */
+function save(){
+  localStorage.setItem("user_"+currentUser, JSON.stringify(userData));
+}
+
+/* LOGOUT */
+function logout(){
+  location.reload();
+}
+</script>
+<!-- GAME SCREEN -->
+<div id="gameScreen" style="display:none; position:fixed; inset:0; background:#0f172a; z-index:9998;">
+
+  <!-- TOP BAR -->
+  <div style="display:flex; justify-content:space-between; padding:10px; background:#0008;">
+    <div id="g_name"></div>
+    <div>💰 <span id="g_coin">100</span></div>
+  </div>
+
+  <!-- CHARACTER -->
+  <div style="text-align:center; margin-top:40px;">
+    <img id="g_avatar" src="https://i.imgur.com/6X4GQ0L.png" style="width:160px;">
+  </div>
+
+  <!-- MENU -->
+  <div style="position:fixed; bottom:0; width:100%; display:flex; justify-content:space-around; background:#111; padding:10px;">
+    <div onclick="openShop()">🛍️ Shop</div>
+    <div onclick="logout()">🚪 Logout</div>
+  </div>
+
+</div>
+
+<!-- SHOP -->
+<div id="shopScreen" style="display:none; position:fixed; inset:0; background:#000c; z-index:9999;">
+
+  <h3 style="padding:10px">SHOP</h3>
+
+  <div onclick="buy('sword')" style="padding:15px;">⚔️ Kiếm đỏ</div>
+  <div onclick="buy('staff')" style="padding:15px;">🔮 Gậy phép</div>
+  <div onclick="buy('shield')" style="padding:15px;">🛡️ Khiên</div>
+
+  <button onclick="closeShop()">Đóng</button>
+
+</div>
 </body>
 </html>
