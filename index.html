@@ -10,7 +10,7 @@ body{
   font-family:-apple-system, sans-serif;
 }
 
-/* ===== BACKGROUND NGOÀI ===== */
+/* BACKGROUND NGOÀI */
 body::after{
   content:"";
   position:fixed;
@@ -19,30 +19,30 @@ body::after{
   background-size:cover;
   z-index:0;
   filter:brightness(0.75);
-  opacity:var(--bgOpacity,1);
+
+  /* FIX QUAN TRỌNG */
+  opacity: var(--bgOpacity,1);
   transition:0.3s;
 }
 
-/* ===== LOGO ===== */
+/* LOGO */
 #title{
   position:fixed;
   top:30%;
   width:100%;
   text-align:center;
   z-index:20;
-  color:white;
-  font-size:40px;
-  font-weight:bold;
 }
 
-/* ===== DOT ===== */
+/* DOT */
 .dot{
   position:absolute;
   border-radius:50%;
   z-index:5;
+  cursor:pointer;
 }
 
-/* ===== FAB ===== */
+/* FAB */
 #fab{
   position:fixed;
   bottom:20px;
@@ -50,7 +50,7 @@ body::after{
   width:65px;
   height:65px;
   border-radius:50%;
-  background:#6a5cff;
+  background:linear-gradient(135deg,#6a5cff,#b16cff);
   display:flex;
   justify-content:center;
   align-items:center;
@@ -59,32 +59,35 @@ body::after{
   z-index:5000;
 }
 
-/* ===== MENU ===== */
+/* MENU */
 #menu{
   position:fixed;
   bottom:100px;
   right:20px;
   display:flex;
   flex-direction:column;
-  gap:10px;
+  gap:12px;
   opacity:0;
   pointer-events:none;
+  transform:translateY(30px);
   transition:0.3s;
+  z-index:4000;
 }
 
 #menu.show{
   opacity:1;
   pointer-events:auto;
+  transform:translateY(0);
 }
 
 .item{
-  padding:10px;
-  background:#0008;
+  padding:12px 18px;
+  border-radius:16px;
+  background:rgba(0,0,0,0.6);
   color:white;
-  border-radius:10px;
 }
 
-/* ===== AUTH ===== */
+/* AUTH */
 #authModal{
   position:fixed;
   inset:0;
@@ -96,173 +99,189 @@ body::after{
 }
 
 .card{
-  width:80%;
+  width:85%;
   padding:20px;
-  background:#000c;
+  border-radius:20px;
+  background:rgba(0,0,0,0.75);
   color:white;
-  border-radius:15px;
 }
 
-input,button{
+input{
   width:100%;
   margin-top:10px;
-  padding:10px;
+  padding:12px;
   border:none;
-  border-radius:10px;
+  border-radius:12px;
 }
 
-/* ===== GAME SCREEN ===== */
-#gameScreen{
-  display:none;
-  position:fixed;
-  inset:0;
-  z-index:99999;
-
-  background-image:url('https://raw.githubusercontent.com/manhgopate15/dreamapp/main/5C41187C-9AD8-4C7F-8AA1-5AD53A68C4FE.png');
-  background-size:cover;
-  background-position:center;
-}
-
-/* TOP BAR */
-.topbar{
-  display:flex;
-  justify-content:space-between;
-  padding:10px;
-  background:#0008;
+button{
+  margin-top:15px;
+  padding:12px;
+  border:none;
+  border-radius:16px;
+  background:linear-gradient(135deg,#6a5cff,#b16cff);
   color:white;
-}
-
-/* CHARACTER */
-#character{
-  position:absolute;
-  bottom:120px;
-  left:50%;
-  transform:translateX(-50%);
-}
-
-#character img{
-  width:160px;
-}
-
-/* MENU GAME */
-#gameMenu{
-  position:fixed;
-  bottom:0;
   width:100%;
-  display:flex;
-  justify-content:space-around;
-  background:#111;
-  color:white;
-  padding:10px;
 }
 </style>
 </head>
 
 <body>
 
-<div id="title">BATTLE SOCIAL</div>
+<!-- LOGO -->
+<div id="title">
+  <div>BATTLE SOCIAL</div>
+</div>
 
+<!-- AUTH -->
 <div id="authModal">
   <div class="card">
     <h3 id="authTitle"></h3>
-    <input id="email" placeholder="Email">
-    <input id="password" placeholder="Password">
+    <input placeholder="Email">
+    <input type="password" placeholder="Password">
+    <input placeholder="Tên (đăng ký)">
     <button id="authBtn"></button>
   </div>
 </div>
 
+<!-- FAB -->
 <div id="fab">+</div>
+
+<!-- MENU -->
 <div id="menu"></div>
 
-<!-- GAME -->
-<div id="gameScreen">
-
-  <div class="topbar">
-    <div id="g_name"></div>
-    <div>💰 <span id="g_coin">100</span></div>
-  </div>
-
-  <div id="character">
-    <img id="avatar" src="https://raw.githubusercontent.com/manhgopate15/dreamapp/main/5C41187C-9AD8-4C7F-8AA1-5AD53A68C4FE.png">
-  </div>
-
-  <div id="gameMenu">
-    <div onclick="logout()">Logout</div>
-  </div>
-
-</div>
-
 <script>
+const fab = document.getElementById("fab");
+const menu = document.getElementById("menu");
+
+const authModal = document.getElementById("authModal");
+const authTitle = document.getElementById("authTitle");
+const authBtn = document.getElementById("authBtn");
 
 /* MENU */
-fab.onclick = ()=> menu.classList.toggle("show");
+fab.onclick = () => {
+  menu.classList.toggle("show");
+};
 
 menu.innerHTML = `
-<div class="item" onclick="openLogin()">Login</div>
-<div class="item" onclick="openRegister()">Register</div>
+  <div class="item" onclick="openLogin()">Đăng nhập</div>
+  <div class="item" onclick="openRegister()">Đăng ký</div>
 `;
 
+/* AUTH */
 function openLogin(){
   authModal.style.display="flex";
-  authTitle.innerText="Login";
+  authTitle.innerText="Đăng nhập";
   authBtn.innerText="Login";
 }
 
 function openRegister(){
   authModal.style.display="flex";
-  authTitle.innerText="Register";
+  authTitle.innerText="Đăng ký";
   authBtn.innerText="Register";
 }
 
-/* AUTH */
-authBtn.onclick=()=>{
-  let user=email.value;
-  let pass=password.value;
-
-  if(authTitle.innerText==="Register"){
-    localStorage.setItem(user,pass);
-    alert("OK");
-  }else{
-    if(localStorage.getItem(user)!==pass){
-      alert("Sai");
-      return;
-    }
-    startGame(user);
+authModal.onclick = (e)=>{
+  if(e.target === authModal){
+    authModal.style.display = "none";
   }
 };
 
-/* START GAME */
-function startGame(user){
-  authModal.style.display="none";
-  title.style.display="none";
-
-  // ẨN nền ngoài
-  document.body.style.setProperty("--bgOpacity","0");
-
-  // ẨN dot
-  document.querySelectorAll(".dot").forEach(d=>d.remove());
-
-  gameScreen.style.display="block";
-  g_name.innerText=user;
-}
-
-/* LOGOUT */
-function logout(){
-  location.reload();
-}
-
 /* DOT */
+let dots=[];
 for(let i=0;i<20;i++){
   let d=document.createElement("div");
   d.className="dot";
-  d.style.width="10px";
-  d.style.height="10px";
-  d.style.background="pink";
-  d.style.left=Math.random()*100+"%";
-  d.style.top=Math.random()*100+"%";
+  let size = Math.random()*12+10;
+  d.style.width=size+"px";
+  d.style.height=size+"px";
+  d.style.background=`hsl(${Math.random()*360},70%,70%)`;
+  d.x=Math.random()*innerWidth;
+  d.y=Math.random()*innerHeight;
   document.body.appendChild(d);
+  dots.push(d);
+}
+
+function animate(){
+  dots.forEach(d=>{
+    d.style.left=d.x+"px";
+    d.style.top=d.y+"px";
+  });
+  requestAnimationFrame(animate);
+}
+animate();
+
+/* GAME SYSTEM */
+let currentUser=null;
+let userData=null;
+
+authBtn.onclick=()=>{
+  let inputs=authModal.querySelectorAll("input");
+  let user=inputs[0].value;
+  let pass=inputs[1].value;
+
+  if(authTitle.innerText==="Đăng ký"){
+    let data={pass:pass,coin:100};
+    localStorage.setItem("user_"+user,JSON.stringify(data));
+    alert("OK");
+  }else{
+    let data=JSON.parse(localStorage.getItem("user_"+user));
+    if(!data || data.pass!==pass){
+      alert("Sai");
+      return;
+    }
+    currentUser=user;
+    userData=data;
+    startGame();
+  }
+};
+
+function startGame(){
+  authModal.style.display="none";
+
+  document.getElementById("gameScreen").style.display="block";
+  document.getElementById("title").style.display="none";
+
+  /* ẨN NỀN NGOÀI */
+  document.body.style.setProperty("--bgOpacity","0");
+
+  /* ẨN DOT */
+  document.querySelectorAll(".dot").forEach(d=>{
+    d.style.display="none";
+  });
+
+  document.getElementById("g_name").innerText=currentUser;
+  document.getElementById("g_coin").innerText=userData.coin;
+}
+
+function logout(){
+  location.reload();
 }
 </script>
+
+<!-- GAME SCREEN -->
+<div id="gameScreen" 
+style="
+display:none;
+position:fixed;
+inset:0;
+background-image:url('https://manhgopatel5.github.io/dreamapp/5C41187C-9AD8-4C7F-8AA1-5AD53A68C4FE.png');
+background-size:cover;
+background-position:center;
+background-repeat:no-repeat;
+z-index:99999;
+">
+
+  <div style="display:flex; justify-content:space-between; padding:10px; background:#0008;">
+    <div id="g_name"></div>
+    <div>💰 <span id="g_coin">100</span></div>
+  </div>
+
+  <div style="position:fixed; bottom:0; width:100%; display:flex; justify-content:space-around; background:#111; padding:10px;">
+    <div onclick="logout()">🚪 Logout</div>
+  </div>
+
+</div>
 
 </body>
 </html>
