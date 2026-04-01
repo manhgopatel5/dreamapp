@@ -182,6 +182,7 @@ let dots = [];
 let touches = {};
 
 /* 🔥 COLLISION + REPULSION CHUẨN */
+/* 🔥 HARD COLLISION (KHÔNG XUYÊN NỮA) */
 for(let i=0;i<dots.length;i++){
   for(let j=i+1;j<dots.length;j++){
 
@@ -196,41 +197,37 @@ for(let i=0;i<dots.length;i++){
 
     if(dist < minDist){
 
-      /* 🔥 tránh chia 0 */
-      if(dist === 0) dist = 0.1;
+      /* tránh bug chia 0 */
+      if(dist === 0) dist = 0.01;
 
-      /* vector normalize */
+      /* normal */
       let nx = dx / dist;
       let ny = dy / dist;
 
-      /* 🔥 tách ra (position correction) */
+      /* 🔥 TÁCH RA NGAY (quan trọng nhất) */
       let overlap = minDist - dist;
 
-      a.x -= nx * overlap * 0.5;
-      a.y -= ny * overlap * 0.5;
+      a.x -= nx * overlap / 2;
+      a.y -= ny * overlap / 2;
 
-      b.x += nx * overlap * 0.5;
-      b.y += ny * overlap * 0.5;
+      b.x += nx * overlap / 2;
+      b.y += ny * overlap / 2;
 
-      /* 🔥 đẩy velocity (bounce nhẹ) */
-      let force = overlap * 0.05;
+      /* 🔥 PHẢN XẠ VẬN TỐC (elastic collision) */
+      let dvx = b.vx - a.vx;
+      let dvy = b.vy - a.vy;
 
-      a.vx -= nx * force;
-      a.vy -= ny * force;
+      let impact = dvx * nx + dvy * ny;
 
-      b.vx += nx * force;
-      b.vy += ny * force;
-    }
+      if(impact > 0) continue; // đã tách rồi thì bỏ
 
-    /* 🔥 thêm lực đẩy nhẹ từ xa (không cho tụ lại) */
-    else if(dist < 80){
-      let force = (80 - dist) * 0.0005;
+      let impulse = impact;
 
-      a.vx -= dx * force;
-      a.vy -= dy * force;
+      a.vx += nx * impulse;
+      a.vy += ny * impulse;
 
-      b.vx += dx * force;
-      b.vy += dy * force;
+      b.vx -= nx * impulse;
+      b.vy -= ny * impulse;
     }
   }
 }
