@@ -389,11 +389,50 @@ function fight(p1, p2){
   }
   return "lose";
 }
+player.maxHp = 100;
+player.gold = 500;
 
+function updateUI(){
+  document.getElementById("atk").innerText = player.attack;
+  document.getElementById("def").innerText = player.defense;
+  document.getElementById("gold").innerText = player.gold;
+
+  document.getElementById("hpFill").style.width =
+    (player.hp/player.maxHp*100) + "%";
+}
+
+// hook openGame (không sửa code cũ)
+let oldOpenGame = openGame;
+openGame = function(){
+  oldOpenGame();
+  updateUI();
+};
+
+// logout
+function logout(){
+  document.querySelectorAll("body > div:not(#gameScreen)")
+    .forEach(el => el.style.display = "block");
+
+  document.getElementById("gameScreen").style.display = "none";
+}
 </script>
 <!-- GAME SCREEN -->
 <div id="gameScreen" style="display:none">
+<div class="hud">
+  <div class="topRow">
+    <span>👤 Player</span>
+    <span>💰 <span id="gold">500</span></span>
+  </div>
 
+  <div class="hpBar">
+    <div id="hpFill"></div>
+  </div>
+
+  <div class="stats">
+    ⚔️ <span id="atk">10</span>
+    🛡 <span id="def">5</span>
+  </div>
+</div>
 <style>
 #gameScreen{
   position:fixed;
@@ -402,7 +441,53 @@ function fight(p1, p2){
   z-index:9999;
   color:white;
 }
+.hud{
+  position:absolute;
+  top:20px;
+  left:50%;
+  transform:translateX(-50%);
+  width:85%;
+  z-index:10;
+  font-size:14px;
+}
 
+.topRow{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:6px;
+}
+
+.hpBar{
+  width:100%;
+  height:10px;
+  background:#222;
+  border-radius:10px;
+  overflow:hidden;
+  margin-bottom:6px;
+}
+
+#hpFill{
+  height:100%;
+  width:100%;
+  background:#00f0ff;
+}
+
+.stats{
+  display:flex;
+  justify-content:space-between;
+}
+
+.btnLogout{
+  position:absolute;
+  bottom:80px;
+  left:50%;
+  transform:translateX(-50%);
+  padding:10px 18px;
+  background:#ff3b3b;
+  border:none;
+  border-radius:20px;
+  color:white;
+}
 /* giữ nguyên style gọn nhẹ */
 .gameWrap{
   position:absolute;
@@ -465,7 +550,7 @@ function fight(p1, p2){
 </div>
 
 <button class="btnFight" onclick="battle()">⚔️ Battle</button>
-
+<button class="btnLogout" onclick="logout()">🚪 Logout</button>
 </div>
 </body>
 </html>
