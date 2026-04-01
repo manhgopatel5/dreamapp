@@ -238,12 +238,7 @@ button{
 <script>
 
 /* ================= FIX CLICK CHUẨN ================= */
-window.addEventListener("load", function(){
-
-  document.querySelector(".login").addEventListener("click", openLogin);
-  document.querySelector(".register").addEventListener("click", openRegister);
-
-});
+openRegister);
 
 /* ================= LOGIN ================= */
 function openLogin(){
@@ -342,7 +337,13 @@ function loop(){
 }
 
 loop();
+/* ===== FIX CLICK CHUẨN IOS ===== */
+setTimeout(function(){
 
+  document.querySelector(".login").addEventListener("click", openLogin);
+  document.querySelector(".register").addEventListener("click", openRegister);
+
+}, 0);
 </script>
 
 </body>
