@@ -17,7 +17,7 @@ body::after{
   inset:0;
   background:url("IMG_0577.jpeg") no-repeat center;
   background-size:cover;
-  filter:brightness(0.85);
+  filter:brightness(0.9);
 }
 
 /* CANVAS */
@@ -59,29 +59,32 @@ canvas{
   gap:20px;
 }
 
-/* BUTTON */
 .btn{
   width:110px;
   height:110px;
   border-radius:50%;
+
   display:flex;
+  flex-direction:column;
   align-items:center;
   justify-content:center;
-  text-align:center;
+
   color:white;
   font-weight:700;
   text-transform:uppercase;
-  line-height:1.2;
+  line-height:1.1;
   cursor:pointer;
 }
 
-/* LOGIN */
+.btn span{
+  display:block;
+}
+
 .login{
   background:linear-gradient(#4da6ff,#6a5cff);
   box-shadow:0 0 25px #4da6ff;
 }
 
-/* REGISTER */
 .register{
   background:linear-gradient(#ff4d4d,#ff9f00);
   box-shadow:0 0 25px #ff4d4d;
@@ -101,9 +104,8 @@ canvas{
   width:85%;
   padding:20px;
   border-radius:20px;
-  background:rgba(0,0,0,0.8);
+  background:rgba(0,0,0,0.85);
   color:white;
-  text-align:center;
 }
 
 input{
@@ -130,16 +132,26 @@ button{
 
 <canvas id="c"></canvas>
 
+<!-- TITLE -->
 <div id="title">
   <div class="main">BATTLE</div>
   <div class="sub">SOCIAL</div>
 </div>
 
+<!-- BUTTON -->
 <div id="actions">
-  <div class="btn login" onclick="openLogin()">ĐĂNG<br>NHẬP</div>
-  <div class="btn register" onclick="openRegister()">ĐĂNG<br>KÝ</div>
+  <div class="btn login" onclick="openLogin()">
+    <span>ĐĂNG</span>
+    <span>NHẬP</span>
+  </div>
+
+  <div class="btn register" onclick="openRegister()">
+    <span>ĐĂNG</span>
+    <span>KÝ</span>
+  </div>
 </div>
 
+<!-- MODAL -->
 <div id="authModal">
   <div class="card">
     <h3 id="authTitle"></h3>
@@ -192,7 +204,7 @@ for(let i=0;i<20;i++){
     y:Math.random()*canvas.height,
     vx:(Math.random()-0.5)*3,
     vy:(Math.random()-0.5)*3,
-    size:10+Math.random()*8,
+    size:8+Math.random()*6,
     color:`hsl(${Math.random()*360},70%,70%)`
   });
 }
@@ -222,10 +234,17 @@ function animate(){
 
   dots.forEach(d=>{
 
+    /* FIX NaN */
+    if(!isFinite(d.x)||!isFinite(d.y)){
+      d.x=Math.random()*canvas.width;
+      d.y=Math.random()*canvas.height;
+      d.vx=(Math.random()-0.5)*2;
+      d.vy=(Math.random()-0.5)*2;
+    }
+
     d.x+=d.vx;
     d.y+=d.vy;
 
-    /* bounce */
     if(d.x<0||d.x>canvas.width) d.vx*=-1;
     if(d.y<0||d.y>canvas.height) d.vy*=-1;
 
@@ -237,14 +256,13 @@ function animate(){
       let dist=Math.sqrt(dx*dx+dy*dy);
 
       if(dist<120){
-        let force=2;
-        d.vx+=dx/dist*force;
-        d.vy+=dy/dist*force;
+        d.vx+=dx/(dist||1)*2;
+        d.vy+=dy/(dist||1)*2;
       }
     }
   });
 
-  /* COLLISION (KHÔNG DÍNH) */
+  /* COLLISION SAFE */
   for(let i=0;i<dots.length;i++){
     for(let j=i+1;j<dots.length;j++){
 
@@ -254,9 +272,13 @@ function animate(){
       let dx=b.x-a.x;
       let dy=b.y-a.y;
       let dist=Math.sqrt(dx*dx+dy*dy);
+
+      if(dist<0.001) dist=0.001;
+
       let min=a.size/2+b.size/2;
 
       if(dist<min){
+
         let nx=dx/dist;
         let ny=dy/dist;
 
@@ -267,7 +289,6 @@ function animate(){
         b.x+=nx*overlap/2;
         b.y+=ny*overlap/2;
 
-        /* bật ra */
         a.vx-=nx*1.5;
         a.vy-=ny*1.5;
         b.vx+=nx*1.5;
