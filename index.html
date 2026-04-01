@@ -191,7 +191,36 @@ button{
   background:#050f18;
   z-index:400;
 }
+/* ===== FIX CLICK KHÔNG ĐƯỢC ===== */
 
+/* canvas không chặn */
+canvas{
+  pointer-events:none !important;
+  z-index:1 !important;
+}
+
+/* background không chặn */
+.bg,
+body::after{
+  pointer-events:none !important;
+  z-index:1 !important;
+}
+
+/* UI nằm trên */
+#title{
+  position:fixed;
+  z-index:10 !important;
+}
+
+#actions{
+  position:fixed;
+  z-index:20 !important;
+}
+
+.btn{
+  position:relative;
+  z-index:30 !important;
+}
 </style>
 </head>
 
@@ -377,7 +406,9 @@ function loop(){
   requestAnimationFrame(loop);
 }
 loop();
-
+document.querySelector(".login").onclick = ()=>{
+  alert("OK LOGIN");
+};
 </script>
 
 </body>
