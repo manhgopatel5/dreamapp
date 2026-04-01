@@ -181,15 +181,58 @@ authModal.onclick = (e)=>{
 let dots = [];
 let touches = {};
 
-for(let i=0;i<40;i++){
-  dots.push({
-    x:Math.random()*canvas.width,
-    y:Math.random()*canvas.height,
-    vx:(Math.random()-0.5)*2,
-    vy:(Math.random()-0.5)*2,
-    size:Math.random()*12+10,
-    color:`hsl(${Math.random()*360},70%,70%)`
-  });
+/* 🔥 COLLISION + REPULSION CHUẨN */
+for(let i=0;i<dots.length;i++){
+  for(let j=i+1;j<dots.length;j++){
+
+    let a = dots[i];
+    let b = dots[j];
+
+    let dx = b.x - a.x;
+    let dy = b.y - a.y;
+    let dist = Math.sqrt(dx*dx + dy*dy);
+
+    let minDist = (a.size/2 + b.size/2);
+
+    if(dist < minDist){
+
+      /* 🔥 tránh chia 0 */
+      if(dist === 0) dist = 0.1;
+
+      /* vector normalize */
+      let nx = dx / dist;
+      let ny = dy / dist;
+
+      /* 🔥 tách ra (position correction) */
+      let overlap = minDist - dist;
+
+      a.x -= nx * overlap * 0.5;
+      a.y -= ny * overlap * 0.5;
+
+      b.x += nx * overlap * 0.5;
+      b.y += ny * overlap * 0.5;
+
+      /* 🔥 đẩy velocity (bounce nhẹ) */
+      let force = overlap * 0.05;
+
+      a.vx -= nx * force;
+      a.vy -= ny * force;
+
+      b.vx += nx * force;
+      b.vy += ny * force;
+    }
+
+    /* 🔥 thêm lực đẩy nhẹ từ xa (không cho tụ lại) */
+    else if(dist < 80){
+      let force = (80 - dist) * 0.0005;
+
+      a.vx -= dx * force;
+      a.vy -= dy * force;
+
+      b.vx += dx * force;
+      b.vy += dy * force;
+    }
+  }
 }
 
 /* TOUCH */
