@@ -21,15 +21,13 @@ body{
 }
 
 /* ================= BACKGROUND ================= */
-body::after{
-  content:"";
+.bg{
   position:fixed;
   inset:0;
   background:url("IMG_0577.jpeg") no-repeat center;
   background-size:cover;
   filter:brightness(0.9);
-  pointer-events:none;
-  z-index:1;
+  z-index:0;
 }
 
 /* ================= CANVAS ================= */
@@ -196,7 +194,7 @@ button{
 </head>
 
 <body>
-
+<div class="bg"></div>
 <canvas id="c"></canvas>
 
 <div id="title">
