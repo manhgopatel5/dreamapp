@@ -1,252 +1,299 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html>
 <head>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Battle Social</title>
 
 <style>
 body{
   margin:0;
-  font-family:-apple-system;
-  background:linear-gradient(#0f2027,#203a43,#2c5364);
-  color:white;
   overflow:hidden;
+  font-family:-apple-system;
 }
 
-/* SPLASH */
-#splash{
+/* BACKGROUND */
+body::after{
+  content:"";
   position:fixed;
   inset:0;
+  background:url("IMG_0577.jpeg") no-repeat center;
+  background-size:cover;
+  z-index:0;
+  filter:brightness(0.8);
+}
+
+/* COUNTER */
+#counter{
+  position:fixed;
+  top:60px;
+  width:100%;
+  text-align:center;
+  color:white;
+  z-index:10;
+  font-weight:600;
+}
+
+/* DOT */
+.dot{
+  position:absolute;
+  border-radius:50%;
+  z-index:5;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+/* FAB */
+#fab{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  width:65px;
+  height:65px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#6a5cff,#b16cff);
   display:flex;
-  flex-direction:column;
   justify-content:center;
   align-items:center;
-  background:radial-gradient(circle,#0f2027,#000);
-  z-index:10;
-}
-
-.title{
-  font-size:40px;
-  font-weight:bold;
-  color:#ff3b3b;
-}
-
-.subtitle{
-  color:#ffcc00;
-  margin-bottom:40px;
-}
-
-/* BUTTON */
-.btn{
-  width:140px;
-  height:140px;
-  border-radius:50%;
-  border:none;
   color:white;
-  font-size:18px;
-  margin:10px;
+  font-size:30px;
+  z-index:5000;
   cursor:pointer;
+  box-shadow:0 0 20px rgba(177,108,255,0.6);
 }
 
-.login{
-  background:linear-gradient(45deg,#4facfe,#6a11cb);
+/* MENU */
+#menu{
+  position:fixed;
+  bottom:100px;
+  right:20px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(30px);
+  transition:0.3s;
+  z-index:4000;
 }
 
-.register{
-  background:linear-gradient(45deg,#ff512f,#f09819);
+#menu.show{
+  opacity:1;
+  pointer-events:auto;
+  transform:translateY(0);
 }
 
-/* FORM */
-#auth{
-  display:none;
+.item{
+  padding:12px 18px;
+  border-radius:16px;
+  background:rgba(0,0,0,0.6);
+  color:white;
+  backdrop-filter:blur(10px);
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.item:hover{
+  transform:scale(1.05);
+}
+
+/* MODAL */
+#modal,#authModal{
   position:fixed;
   inset:0;
-  background:#111;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  backdrop-filter:blur(20px);
+  z-index:9999;
+  animation:fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn{
+  from{opacity:0}
+  to{opacity:1}
+}
+
+.card{
+  width:85%;
   padding:20px;
+  border-radius:20px;
+  background:rgba(0,0,0,0.75);
+  color:white;
+  animation:pop 0.25s ease;
+}
+
+@keyframes pop{
+  from{transform:scale(0.8);opacity:0}
+  to{transform:scale(1);opacity:1}
 }
 
 input{
   width:100%;
+  margin-top:10px;
   padding:12px;
-  margin:10px 0;
   border:none;
-  border-radius:10px;
+  border-radius:12px;
 }
 
-.action{
+button{
+  margin-top:15px;
   padding:12px;
-  background:#00c6ff;
   border:none;
-  border-radius:10px;
+  border-radius:16px;
+  background:linear-gradient(135deg,#6a5cff,#b16cff);
   color:white;
+  width:100%;
+  font-weight:600;
 }
-
-/* PROFILE */
-#profile{
-  display:none;
-  padding:20px;
-  text-align:center;
-}
-
-.avatar{
-  width:100px;
-  height:100px;
-  border-radius:50%;
-  background:#333;
-  margin:auto;
-  background-size:cover;
-}
-
 </style>
 </head>
 
 <body>
 
-<!-- SPLASH -->
-<div id="splash">
-  <div class="title">BATTLE</div>
-  <div class="subtitle">SOCIAL</div>
+<div id="counter">20 / 20</div>
 
-  <div>
-    <button class="btn login" onclick="showLogin()">ĐĂNG NHẬP</button>
-    <button class="btn register" onclick="showRegister()">ĐĂNG KÝ</button>
+<!-- MESSAGE -->
+<div id="modal">
+  <div class="card">
+    <div id="msg"></div>
+    <input id="input" placeholder="Nhập tin...">
+    <button onclick="send()">Gửi</button>
   </div>
 </div>
 
 <!-- AUTH -->
-<div id="auth">
-  <h2 id="formTitle"></h2>
-
-  <input id="username" placeholder="Tên">
-  <input id="password" type="password" placeholder="Mật khẩu">
-
-  <label>
-    <input type="checkbox" id="remember"> Ghi nhớ mật khẩu
-  </label>
-
-  <button class="action" onclick="submitAuth()">Xác nhận</button>
-  <button onclick="back()">← Quay lại</button>
-
-  <hr>
-
-  <button onclick="fakeTikTok()">Đăng ký bằng TikTok</button>
+<div id="authModal">
+  <div class="card">
+    <h3 id="authTitle"></h3>
+    <input id="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+    <input id="displayName" placeholder="Tên (đăng ký)">
+    <button id="authBtn"></button>
+  </div>
 </div>
 
-<!-- PROFILE -->
-<div id="profile">
-  <h2>Hồ sơ</h2>
+<!-- FAB -->
+<div id="fab">+</div>
 
-  <div id="avatar" class="avatar"></div>
-
-  <input type="file" onchange="changeAvatar(event)">
-
-  <input id="newName" placeholder="Đổi tên">
-
-  <button onclick="saveProfile()">Lưu</button>
-</div>
+<!-- MENU -->
+<div id="menu"></div>
 
 <script>
-let mode = "login";
+/* ELEMENT */
+const fab = document.getElementById("fab");
+const menu = document.getElementById("menu");
 
-/* SHOW FORM */
-function showLogin(){
-  mode="login";
-  splash.style.display="none";
-  auth.style.display="block";
-  formTitle.innerText="Đăng nhập";
+const modal = document.getElementById("modal");
+const msg = document.getElementById("msg");
+const input = document.getElementById("input");
+const counter = document.getElementById("counter");
 
-  // load nhớ mật khẩu
-  let saved = localStorage.getItem("user");
-  if(saved){
-    let u = JSON.parse(saved);
-    username.value = u.name;
-    password.value = u.pass;
+const authModal = document.getElementById("authModal");
+const authTitle = document.getElementById("authTitle");
+const authBtn = document.getElementById("authBtn");
+
+/* MENU */
+fab.onclick = () => {
+  menu.classList.toggle("show");
+};
+
+function renderMenu(){
+  menu.innerHTML = `
+    <div class="item" onclick="openLogin()">Đăng nhập</div>
+    <div class="item" onclick="openRegister()">Đăng ký</div>
+  `;
+}
+renderMenu();
+
+/* AUTH */
+function openLogin(){
+  authModal.style.display="flex";
+  authTitle.innerText="Đăng nhập";
+  authBtn.innerText="Login";
+}
+
+function openRegister(){
+  authModal.style.display="flex";
+  authTitle.innerText="Đăng ký";
+  authBtn.innerText="Register";
+}
+
+/* CLICK OUTSIDE CLOSE */
+authModal.onclick = (e)=>{
+  if(e.target === authModal){
+    authModal.style.display = "none";
   }
-}
+};
 
-function showRegister(){
-  mode="register";
-  splash.style.display="none";
-  auth.style.display="block";
-  formTitle.innerText="Đăng ký";
-}
-
-/* SUBMIT */
-function submitAuth(){
-  let name = username.value;
-  let pass = password.value;
-
-  if(!name || !pass){
-    alert("Nhập đầy đủ!");
-    return;
+modal.onclick = (e)=>{
+  if(e.target === modal){
+    modal.style.display = "none";
   }
+};
 
-  let user = {name, pass};
+/* DOT SYSTEM */
+let dots=[], available=20;
 
-  if(remember.checked){
-    localStorage.setItem("user",JSON.stringify(user));
-  }
+for(let i=0;i<20;i++){
+  let d=document.createElement("div");
+  d.className="dot";
 
-  localStorage.setItem("currentUser",JSON.stringify(user));
+  let size = Math.random()*12+10;
+  d.style.width=size+"px";
+  d.style.height=size+"px";
+  d.style.background=`hsl(${Math.random()*360},70%,70%)`;
 
-  openProfile();
+  d.x=Math.random()*innerWidth;
+  d.y=Math.random()*innerHeight;
+  d.tx=Math.random()*innerWidth;
+  d.ty=Math.random()*innerHeight;
+
+  d.onclick=()=>openDot(d);
+
+  document.body.appendChild(d);
+  dots.push(d);
 }
 
-/* TIKTOK FAKE */
-function fakeTikTok(){
-  let user = {
-    name:"TikTok_User_"+Math.floor(Math.random()*1000),
-    pass:"tiktok"
-  };
+/* ANIMATION */
+function animate(){
+  dots.forEach(d=>{
+    d.x+=(d.tx-d.x)*0.015;
+    d.y+=(d.ty-d.y)*0.015;
 
-  localStorage.setItem("currentUser",JSON.stringify(user));
-  openProfile();
+    if(Math.abs(d.x-d.tx)<1){
+      d.tx=Math.random()*innerWidth;
+      d.ty=Math.random()*innerHeight;
+    }
+
+    d.style.left=d.x+"px";
+    d.style.top=d.y+"px";
+  });
+
+  requestAnimationFrame(animate);
+}
+animate();
+
+/* CLICK DOT */
+function openDot(d){
+  if(d.used) return;
+
+  d.used=true;
+  d.style.transform="scale(0)";
+  d.style.opacity=0;
+
+  setTimeout(()=>d.remove(),300);
+
+  available--;
+  counter.innerText=available+" / 20";
+
+  msg.innerText="Một lời nhắn ngẫu nhiên ✨";
+  modal.style.display="flex";
 }
 
-/* PROFILE */
-function openProfile(){
-  auth.style.display="none";
-  profile.style.display="block";
-
-  let user = JSON.parse(localStorage.getItem("currentUser"));
-  newName.value = user.name;
-}
-
-function saveProfile(){
-  let user = JSON.parse(localStorage.getItem("currentUser"));
-  user.name = newName.value;
-
-  localStorage.setItem("currentUser",JSON.stringify(user));
-
-  alert("Đã lưu!");
-}
-
-/* AVATAR */
-function changeAvatar(e){
-  let file = e.target.files[0];
-  let reader = new FileReader();
-
-  reader.onload = function(){
-    avatar.style.backgroundImage = `url(${reader.result})`;
-    localStorage.setItem("avatar",reader.result);
-  }
-
-  reader.readAsDataURL(file);
-}
-
-/* LOAD AVATAR */
-window.onload = ()=>{
-  let ava = localStorage.getItem("avatar");
-  if(ava){
-    avatar.style.backgroundImage = `url(${ava})`;
-  }
-}
-
-/* BACK */
-function back(){
-  auth.style.display="none";
-  splash.style.display="flex";
+/* SEND */
+function send(){
+  modal.style.display="none";
+  input.value="";
 }
 </script>
 
