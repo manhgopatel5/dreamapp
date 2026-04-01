@@ -406,8 +406,13 @@ function loop(){
   requestAnimationFrame(loop);
 }
 loop();
-document.querySelector(".login").onclick = ()=>{
-  alert("OK LOGIN");
+
+/* ===== FIX CLICK ===== */
+window.onload = function(){
+
+  document.querySelector(".login").addEventListener("click", openLogin);
+  document.querySelector(".register").addEventListener("click", openRegister);
+
 };
 </script>
 
