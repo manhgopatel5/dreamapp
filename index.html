@@ -7,7 +7,7 @@
 body{
   margin:0;
   overflow:hidden;
-  font-family:-apple-system;
+  font-family:-apple-system, sans-serif;
 }
 
 /* BACKGROUND */
@@ -18,7 +18,65 @@ body::after{
   background:url("IMG_0577.jpeg") no-repeat center;
   background-size:cover;
   z-index:0;
-  filter:brightness(0.8);
+  filter:brightness(0.75);
+}
+
+/* TITLE */
+#title{
+  position:fixed;
+  top:35%;
+  width:100%;
+  text-align:center;
+  z-index:20;
+  user-select:none;
+}
+
+#title h1{
+  margin:0;
+  font-size:48px;
+  letter-spacing:3px;
+  font-weight:900;
+
+  background:linear-gradient(90deg,#ff2d2d,#ff6a00);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+
+  text-shadow:
+    0 0 10px rgba(255,80,80,0.8),
+    0 0 25px rgba(255,80,80,0.6),
+    0 0 50px rgba(255,80,80,0.4);
+
+  animation:glow 2s infinite alternate;
+}
+
+#title h2{
+  margin-top:5px;
+  font-size:22px;
+  font-weight:700;
+
+  background:linear-gradient(90deg,#ffd000,#ff9900);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+
+  text-shadow:
+    0 0 8px rgba(255,200,0,0.8),
+    0 0 20px rgba(255,200,0,0.6);
+
+}
+
+/* GLOW ANIMATION */
+@keyframes glow{
+  from{
+    text-shadow:
+      0 0 10px rgba(255,80,80,0.8),
+      0 0 25px rgba(255,80,80,0.6);
+  }
+  to{
+    text-shadow:
+      0 0 20px rgba(255,120,120,1),
+      0 0 40px rgba(255,80,80,0.9),
+      0 0 80px rgba(255,80,80,0.6);
+  }
 }
 
 /* COUNTER */
@@ -105,12 +163,6 @@ body::after{
   align-items:center;
   backdrop-filter:blur(20px);
   z-index:9999;
-  animation:fadeIn 0.25s ease;
-}
-
-@keyframes fadeIn{
-  from{opacity:0}
-  to{opacity:1}
 }
 
 .card{
@@ -119,12 +171,6 @@ body::after{
   border-radius:20px;
   background:rgba(0,0,0,0.75);
   color:white;
-  animation:pop 0.25s ease;
-}
-
-@keyframes pop{
-  from{transform:scale(0.8);opacity:0}
-  to{transform:scale(1);opacity:1}
 }
 
 input{
@@ -149,6 +195,12 @@ button{
 </head>
 
 <body>
+
+<!-- TITLE -->
+<div id="title">
+  <h1>BATTLE</h1>
+  <h2>SOCIAL</h2>
+</div>
 
 <div id="counter">20 / 20</div>
 
@@ -179,7 +231,6 @@ button{
 <div id="menu"></div>
 
 <script>
-/* ELEMENT */
 const fab = document.getElementById("fab");
 const menu = document.getElementById("menu");
 
@@ -218,7 +269,6 @@ function openRegister(){
   authBtn.innerText="Register";
 }
 
-/* CLICK OUTSIDE CLOSE */
 authModal.onclick = (e)=>{
   if(e.target === authModal){
     authModal.style.display = "none";
@@ -254,7 +304,6 @@ for(let i=0;i<20;i++){
   dots.push(d);
 }
 
-/* ANIMATION */
 function animate(){
   dots.forEach(d=>{
     d.x+=(d.tx-d.x)*0.015;
