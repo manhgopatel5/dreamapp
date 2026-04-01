@@ -10,7 +10,7 @@ body{
   font-family:-apple-system, sans-serif;
 }
 
-/* BACKGROUND */
+/* ===== BACKGROUND NGOÀI ===== */
 body::after{
   content:"";
   position:fixed;
@@ -19,128 +19,30 @@ body::after{
   background-size:cover;
   z-index:0;
   filter:brightness(0.75);
+  opacity:var(--bgOpacity,1);
+  transition:0.3s;
 }
 
-/* ================= LOGO GAME ================= */
+/* ===== LOGO ===== */
 #title{
   position:fixed;
   top:30%;
   width:100%;
   text-align:center;
   z-index:20;
+  color:white;
+  font-size:40px;
+  font-weight:bold;
 }
 
-.logo{
-  position:relative;
-  display:inline-block;
-}
-
-/* AURA */
-.logo::before{
-  content:"";
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  width:320px;
-  height:160px;
-  background:radial-gradient(circle,
-    rgba(255,80,80,0.6),
-    rgba(255,80,80,0.2),
-    transparent);
-  filter:blur(40px);
-  z-index:-1;
-  animation:aura 3s ease-in-out infinite;
-}
-
-@keyframes aura{
-  0%,100%{transform:translate(-50%,-50%) scale(1);}
-  50%{transform:translate(-50%,-50%) scale(1.2);}
-}
-
-/* BATTLE */
-.battle{
-  display:block;
-  font-size:72px;
-  font-weight:900;
-  letter-spacing:5px;
-
-  background:linear-gradient(90deg,#ff2d2d,#ff6a00,#ff2d2d);
-  background-size:200% auto;
-
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-
-  text-shadow:
-    0 2px 0 #aa0000,
-    0 0 10px rgba(255,50,50,0.9),
-    0 0 25px rgba(255,50,50,0.8),
-    0 0 60px rgba(255,50,50,0.6),
-    0 0 120px rgba(255,50,50,0.5);
-
-  animation:
-    glow 2s infinite alternate,
-    shine 4s linear infinite,
-    pulse 2.5s ease-in-out infinite;
-}
-
-/* SOCIAL */
-.social{
-  display:block;
-  margin-top:10px;
-  font-size:30px;
-  font-weight:800;
-  letter-spacing:4px;
-
-  background:linear-gradient(90deg,#ffd000,#ff9a00,#ffd000);
-  background-size:200% auto;
-
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-
-  text-shadow:
-    0 0 8px rgba(255,200,0,0.9),
-    0 0 20px rgba(255,200,0,0.8),
-    0 0 40px rgba(255,200,0,0.6);
-
-  animation:shine 5s linear infinite;
-}
-
-/* EFFECTS */
-@keyframes glow{
-  from{
-    text-shadow:
-      0 0 10px rgba(255,50,50,0.8),
-      0 0 25px rgba(255,50,50,0.6);
-  }
-  to{
-    text-shadow:
-      0 0 20px rgba(255,100,100,1),
-      0 0 40px rgba(255,50,50,0.9),
-      0 0 80px rgba(255,50,50,0.7),
-      0 0 140px rgba(255,50,50,0.5);
-  }
-}
-
-@keyframes shine{
-  to{ background-position:200% center; }
-}
-
-@keyframes pulse{
-  0%,100%{transform:scale(1);}
-  50%{transform:scale(1.05);}
-}
-
-/* ================= DOT ================= */
+/* ===== DOT ===== */
 .dot{
   position:absolute;
   border-radius:50%;
   z-index:5;
-  cursor:pointer;
-  transition:0.3s;
 }
 
-/* ================= FAB ================= */
+/* ===== FAB ===== */
 #fab{
   position:fixed;
   bottom:20px;
@@ -148,48 +50,41 @@ body::after{
   width:65px;
   height:65px;
   border-radius:50%;
-  background:linear-gradient(135deg,#6a5cff,#b16cff);
+  background:#6a5cff;
   display:flex;
   justify-content:center;
   align-items:center;
   color:white;
   font-size:30px;
   z-index:5000;
-  cursor:pointer;
-  box-shadow:0 0 20px rgba(177,108,255,0.6);
 }
 
-/* ================= MENU ================= */
+/* ===== MENU ===== */
 #menu{
   position:fixed;
   bottom:100px;
   right:20px;
   display:flex;
   flex-direction:column;
-  gap:12px;
+  gap:10px;
   opacity:0;
   pointer-events:none;
-  transform:translateY(30px);
   transition:0.3s;
-  z-index:4000;
 }
 
 #menu.show{
   opacity:1;
   pointer-events:auto;
-  transform:translateY(0);
 }
 
 .item{
-  padding:12px 18px;
-  border-radius:16px;
-  background:rgba(0,0,0,0.6);
+  padding:10px;
+  background:#0008;
   color:white;
-  backdrop-filter:blur(10px);
-  cursor:pointer;
+  border-radius:10px;
 }
 
-/* ================= AUTH ================= */
+/* ===== AUTH ===== */
 #authModal{
   position:fixed;
   inset:0;
@@ -201,296 +96,173 @@ body::after{
 }
 
 .card{
-  width:85%;
+  width:80%;
   padding:20px;
-  border-radius:20px;
-  background:rgba(0,0,0,0.75);
+  background:#000c;
   color:white;
+  border-radius:15px;
 }
 
-input{
+input,button{
   width:100%;
   margin-top:10px;
-  padding:12px;
+  padding:10px;
   border:none;
-  border-radius:12px;
+  border-radius:10px;
 }
 
-button{
-  margin-top:15px;
-  padding:12px;
-  border:none;
-  border-radius:16px;
-  background:linear-gradient(135deg,#6a5cff,#b16cff);
+/* ===== GAME SCREEN ===== */
+#gameScreen{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:99999;
+
+  background-image:url('https://raw.githubusercontent.com/manhgopate15/dreamapp/main/5C41187C-9AD8-4C7F-8AA1-5AD53A68C4FE.png');
+  background-size:cover;
+  background-position:center;
+}
+
+/* TOP BAR */
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  padding:10px;
+  background:#0008;
   color:white;
+}
+
+/* CHARACTER */
+#character{
+  position:absolute;
+  bottom:120px;
+  left:50%;
+  transform:translateX(-50%);
+}
+
+#character img{
+  width:160px;
+}
+
+/* MENU GAME */
+#gameMenu{
+  position:fixed;
+  bottom:0;
   width:100%;
+  display:flex;
+  justify-content:space-around;
+  background:#111;
+  color:white;
+  padding:10px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- LOGO -->
-<div id="title">
-  <div class="logo">
-    <span class="battle">BATTLE</span>
-    <span class="social">SOCIAL</span>
-  </div>
-</div>
+<div id="title">BATTLE SOCIAL</div>
 
-<!-- AUTH -->
 <div id="authModal">
   <div class="card">
     <h3 id="authTitle"></h3>
-    <input placeholder="Email">
-    <input type="password" placeholder="Password">
-    <input placeholder="Tên (đăng ký)">
+    <input id="email" placeholder="Email">
+    <input id="password" placeholder="Password">
     <button id="authBtn"></button>
   </div>
 </div>
 
-<!-- FAB -->
 <div id="fab">+</div>
-
-<!-- MENU -->
 <div id="menu"></div>
 
-<script>
-const fab = document.getElementById("fab");
-const menu = document.getElementById("menu");
+<!-- GAME -->
+<div id="gameScreen">
 
-const authModal = document.getElementById("authModal");
-const authTitle = document.getElementById("authTitle");
-const authBtn = document.getElementById("authBtn");
+  <div class="topbar">
+    <div id="g_name"></div>
+    <div>💰 <span id="g_coin">100</span></div>
+  </div>
+
+  <div id="character">
+    <img id="avatar" src="https://raw.githubusercontent.com/manhgopate15/dreamapp/main/5C41187C-9AD8-4C7F-8AA1-5AD53A68C4FE.png">
+  </div>
+
+  <div id="gameMenu">
+    <div onclick="logout()">Logout</div>
+  </div>
+
+</div>
+
+<script>
 
 /* MENU */
-fab.onclick = () => {
-  menu.classList.toggle("show");
-};
+fab.onclick = ()=> menu.classList.toggle("show");
 
 menu.innerHTML = `
-  <div class="item" onclick="openLogin()">Đăng nhập</div>
-  <div class="item" onclick="openRegister()">Đăng ký</div>
+<div class="item" onclick="openLogin()">Login</div>
+<div class="item" onclick="openRegister()">Register</div>
 `;
 
-/* AUTH */
 function openLogin(){
   authModal.style.display="flex";
-  authTitle.innerText="Đăng nhập";
+  authTitle.innerText="Login";
   authBtn.innerText="Login";
 }
 
 function openRegister(){
   authModal.style.display="flex";
-  authTitle.innerText="Đăng ký";
+  authTitle.innerText="Register";
   authBtn.innerText="Register";
 }
 
-authModal.onclick = (e)=>{
-  if(e.target === authModal){
-    authModal.style.display = "none";
-  }
-};
+/* AUTH */
+authBtn.onclick=()=>{
+  let user=email.value;
+  let pass=password.value;
 
-/* DOT SYSTEM */
-let dots=[];
-
-for(let i=0;i<20;i++){
-  let d=document.createElement("div");
-  d.className="dot";
-
-  let size = Math.random()*12+10;
-  d.style.width=size+"px";
-  d.style.height=size+"px";
-  d.style.background=`hsl(${Math.random()*360},70%,70%)`;
-
-  d.x=Math.random()*innerWidth;
-  d.y=Math.random()*innerHeight;
-  d.tx=Math.random()*innerWidth;
-  d.ty=Math.random()*innerHeight;
-
-  d.onclick=()=>{
-    d.style.transform="scale(0)";
-    d.style.opacity=0;
-    setTimeout(()=>d.remove(),300);
-  };
-
-  document.body.appendChild(d);
-  dots.push(d);
-}
-
-/* ANIMATION */
-function animate(){
-  dots.forEach(d=>{
-    d.x+=(d.tx-d.x)*0.015;
-    d.y+=(d.ty-d.y)*0.015;
-
-    if(Math.abs(d.x-d.tx)<1){
-      d.tx=Math.random()*innerWidth;
-      d.ty=Math.random()*innerHeight;
+  if(authTitle.innerText==="Register"){
+    localStorage.setItem(user,pass);
+    alert("OK");
+  }else{
+    if(localStorage.getItem(user)!==pass){
+      alert("Sai");
+      return;
     }
-
-    d.style.left=d.x+"px";
-    d.style.top=d.y+"px";
-  });
-
-  requestAnimationFrame(animate);
-}
-animate();
-/* ================= GAME SYSTEM ================= */
-
-let currentUser = null;
-let userData = null;
-
-/* OVERRIDE BUTTON AUTH */
-authBtn.onclick = () => {
-  if(authTitle.innerText === "Đăng ký"){
-    register();
-  }else{
-    login();
+    startGame(user);
   }
 };
 
-function register(){
-  let inputs = authModal.querySelectorAll("input");
-  let user = inputs[0].value;
-  let pass = inputs[1].value;
-
-  if(!user || !pass) return alert("Nhập thiếu");
-
-  let data = {
-    pass:pass,
-    coin:100,
-    inventory:[],
-    equipped:null
-  };
-
-  localStorage.setItem("user_"+user, JSON.stringify(data));
-  alert("Đăng ký OK");
-}
-
-function login(){
-  let inputs = authModal.querySelectorAll("input");
-  let user = inputs[0].value;
-  let pass = inputs[1].value;
-
-  let data = JSON.parse(localStorage.getItem("user_"+user));
-
-  if(!data || data.pass !== pass){
-    alert("Sai tài khoản");
-    return;
-  }
-
-  currentUser = user;
-  userData = data;
-
-  startGame();
-}
-
-function startGame(){
+/* START GAME */
+function startGame(user){
   authModal.style.display="none";
+  title.style.display="none";
 
-  document.getElementById("gameScreen").style.display="block";
-  document.getElementById("title").style.display="none";
+  // ẨN nền ngoài
+  document.body.style.setProperty("--bgOpacity","0");
 
-  // 🔥 ẨN DOT
-  document.querySelectorAll(".dot").forEach(d=>{
-    d.style.display="none";
-  });
+  // ẨN dot
+  document.querySelectorAll(".dot").forEach(d=>d.remove());
 
-  document.getElementById("g_name").innerText = currentUser;
-  document.getElementById("g_coin").innerText = userData.coin;
-
-  updateAvatar();
-}
-
-/* SHOP */
-function openShop(){
-  document.getElementById("shopScreen").style.display="block";
-}
-
-function closeShop(){
-  document.getElementById("shopScreen").style.display="none";
-}
-
-function buy(item){
-  userData.inventory.push(item);
-  userData.equipped = item;
-
-  save();
-  updateAvatar();
-}
-
-/* AVATAR */
-function updateAvatar(){
-  let avatar = document.getElementById("g_avatar");
-
-  if(userData.equipped === "sword"){
-    avatar.src="https://i.imgur.com/8Qf6R0p.png";
-  }else if(userData.equipped === "staff"){
-    avatar.src="https://i.imgur.com/tX5XG6P.png";
-  }else{
-    avatar.src="https://i.imgur.com/6X4GQ0L.png";
-  }
-}
-
-/* SAVE */
-function save(){
-  localStorage.setItem("user_"+currentUser, JSON.stringify(userData));
+  gameScreen.style.display="block";
+  g_name.innerText=user;
 }
 
 /* LOGOUT */
 function logout(){
   location.reload();
 }
+
+/* DOT */
+for(let i=0;i<20;i++){
+  let d=document.createElement("div");
+  d.className="dot";
+  d.style.width="10px";
+  d.style.height="10px";
+  d.style.background="pink";
+  d.style.left=Math.random()*100+"%";
+  d.style.top=Math.random()*100+"%";
+  document.body.appendChild(d);
+}
 </script>
-<!-- GAME SCREEN -->
-<div id="gameScreen" 
-style="
-display:none;
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
 
-background-image:url('https://raw.githubusercontent.com/manhgopate15/dreamapp/main/5C41187C-9AD8-4C7F-8AA1-5AD53A68C4FE.png');
-background-size:cover;
-background-position:center;
-background-repeat:no-repeat;
-
-z-index:99999;
-">
-  <!-- TOP BAR -->
-  <div style="display:flex; justify-content:space-between; padding:10px; background:#0008;">
-    <div id="g_name"></div>
-    <div>💰 <span id="g_coin">100</span></div>
-  </div>
-
-  <!-- CHARACTER -->
-  <div style="text-align:center; margin-top:40px;">
-    <img id="g_avatar" src="https://i.imgur.com/6X4GQ0L.png" style="width:160px;">
-  </div>
-
-  <!-- MENU -->
-  <div style="position:fixed; bottom:0; width:100%; display:flex; justify-content:space-around; background:#111; padding:10px;">
-    <div onclick="openShop()">🛍️ Shop</div>
-    <div onclick="logout()">🚪 Logout</div>
-  </div>
-
-</div>
-
-<!-- SHOP -->
-<div id="shopScreen" style="display:none; position:fixed; inset:0; background:#000c; z-index:9999;">
-
-  <h3 style="padding:10px">SHOP</h3>
-
-  <div onclick="buy('sword')" style="padding:15px;">⚔️ Kiếm đỏ</div>
-  <div onclick="buy('staff')" style="padding:15px;">🔮 Gậy phép</div>
-  <div onclick="buy('shield')" style="padding:15px;">🛡️ Khiên</div>
-
-  <button onclick="closeShop()">Đóng</button>
-
-</div>
 </body>
 </html>
