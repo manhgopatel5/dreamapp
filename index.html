@@ -3,193 +3,99 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Battle Social</title>
 
 <style>
-
-/* ================= RESET ================= */
-*{
-  box-sizing:border-box;
-}
-
 body{
   margin:0;
+  font-family:-apple-system;
+  background:linear-gradient(#0f2027,#203a43,#2c5364);
+  color:white;
   overflow:hidden;
-  font-family:-apple-system, Arial;
-  background:#0b1d2a;
 }
 
-/* ================= BACKGROUND ================= */
-.bg{
+/* SPLASH */
+#splash{
   position:fixed;
   inset:0;
-  background:url("IMG_0577.jpeg") no-repeat center;
-  background-size:cover;
-  filter:brightness(0.9);
-  z-index:0;
-  pointer-events:none;
-}
-
-/* ================= CANVAS ================= */
-canvas{
-  position:fixed;
-  inset:0;
-  z-index:1;
-  pointer-events:none;
-}
-
-/* ================= TITLE ================= */
-#title{
-  position:fixed;
-  top:30%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  text-align:center;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  background:radial-gradient(circle,#0f2027,#000);
   z-index:10;
 }
 
-.main{
-  font-size:60px;
-  font-weight:900;
-  color:#ff2a2a;
-  text-shadow:0 0 30px red;
+.title{
+  font-size:40px;
+  font-weight:bold;
+  color:#ff3b3b;
 }
 
-.sub{
-  font-size:42px;
-  margin-top:-10px;
-  color:#ffb300;
-  text-shadow:0 0 20px orange;
+.subtitle{
+  color:#ffcc00;
+  margin-bottom:40px;
 }
 
-/* ================= BUTTONS ================= */
-#actions{
-  position:fixed;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  display:flex;
-  gap:25px;
-  z-index:20;
-}
-
+/* BUTTON */
 .btn{
-  width:120px;
-  height:120px;
+  width:140px;
+  height:140px;
   border-radius:50%;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
+  border:none;
   color:white;
-  font-weight:700;
-  text-transform:uppercase;
+  font-size:18px;
+  margin:10px;
   cursor:pointer;
-  z-index:30;
-  transition:0.2s;
-  pointer-events:auto;
-}
-
-.btn:active{
-  transform:scale(0.9);
 }
 
 .login{
-  background:linear-gradient(#4da6ff,#6a5cff);
-  box-shadow:0 0 25px #4da6ff;
+  background:linear-gradient(45deg,#4facfe,#6a11cb);
 }
 
 .register{
-  background:linear-gradient(#ff4d4d,#ff9f00);
-  box-shadow:0 0 25px #ff4d4d;
+  background:linear-gradient(45deg,#ff512f,#f09819);
 }
 
-/* ================= MODAL ================= */
-#modal{
+/* FORM */
+#auth{
+  display:none;
   position:fixed;
   inset:0;
-  display:none;
-  justify-content:center;
-  align-items:center;
-  backdrop-filter:blur(15px);
-  z-index:100;
-}
-
-.card{
-  width:85%;
+  background:#111;
   padding:20px;
-  border-radius:20px;
-  background:rgba(0,0,0,0.85);
-  color:white;
 }
 
 input{
   width:100%;
-  margin-top:10px;
   padding:12px;
+  margin:10px 0;
   border:none;
-  border-radius:12px;
-}
-
-button{
-  margin-top:15px;
-  padding:12px;
-  border:none;
-  border-radius:20px;
-  background:linear-gradient(135deg,#6a5cff,#b16cff);
-  color:white;
-  width:100%;
-}
-
-/* ================= FLASH ================= */
-#flash{
-  position:fixed;
-  inset:0;
-  background:white;
-  opacity:0;
-  transition:0.5s;
-  z-index:200;
-}
-
-/* ================= LOADING ================= */
-#loading{
-  position:fixed;
-  inset:0;
-  display:none;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-  background:#050f18;
-  color:white;
-  z-index:300;
-}
-
-.bar{
-  width:70%;
-  height:10px;
-  background:#222;
   border-radius:10px;
-  overflow:hidden;
 }
 
-.fill{
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg,#6a5cff,#ff4d4d);
-}
-
-/* ================= HOME ================= */
-#home{
-  position:fixed;
-  inset:0;
-  display:none;
-  justify-content:center;
-  align-items:center;
+.action{
+  padding:12px;
+  background:#00c6ff;
+  border:none;
+  border-radius:10px;
   color:white;
-  font-size:30px;
-  background:#050f18;
-  z-index:400;
+}
+
+/* PROFILE */
+#profile{
+  display:none;
+  padding:20px;
+  text-align:center;
+}
+
+.avatar{
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  background:#333;
+  margin:auto;
+  background-size:cover;
 }
 
 </style>
@@ -197,161 +103,151 @@ button{
 
 <body>
 
-<div class="bg"></div>
-<canvas id="c"></canvas>
+<!-- SPLASH -->
+<div id="splash">
+  <div class="title">BATTLE</div>
+  <div class="subtitle">SOCIAL</div>
 
-<div id="title">
-  <div class="main">BATTLE</div>
-  <div class="sub">SOCIAL</div>
-</div>
-
-<div id="actions">
-  <div class="btn login">
-    <span>ĐĂNG</span>
-    <span>NHẬP</span>
-  </div>
-
-  <div class="btn register">
-    <span>ĐĂNG</span>
-    <span>KÝ</span>
+  <div>
+    <button class="btn login" onclick="showLogin()">ĐĂNG NHẬP</button>
+    <button class="btn register" onclick="showRegister()">ĐĂNG KÝ</button>
   </div>
 </div>
 
-<div id="modal">
-  <div class="card">
-    <h3 id="modalTitle"></h3>
-    <input placeholder="Email">
-    <input type="password" placeholder="Password">
-    <input placeholder="Tên">
-    <button onclick="goNext()">TIẾP TỤC</button>
-  </div>
+<!-- AUTH -->
+<div id="auth">
+  <h2 id="formTitle"></h2>
+
+  <input id="username" placeholder="Tên">
+  <input id="password" type="password" placeholder="Mật khẩu">
+
+  <label>
+    <input type="checkbox" id="remember"> Ghi nhớ mật khẩu
+  </label>
+
+  <button class="action" onclick="submitAuth()">Xác nhận</button>
+  <button onclick="back()">← Quay lại</button>
+
+  <hr>
+
+  <button onclick="fakeTikTok()">Đăng ký bằng TikTok</button>
 </div>
 
-<div id="flash"></div>
+<!-- PROFILE -->
+<div id="profile">
+  <h2>Hồ sơ</h2>
 
-<div id="loading">
-  <div class="bar"><div class="fill"></div></div>
-  <div style="margin-top:10px;">Loading...</div>
-</div>
+  <div id="avatar" class="avatar"></div>
 
-<div id="home">
-  🎮 Welcome to Battle Social
+  <input type="file" onchange="changeAvatar(event)">
+
+  <input id="newName" placeholder="Đổi tên">
+
+  <button onclick="saveProfile()">Lưu</button>
 </div>
 
 <script>
+let mode = "login";
 
-/* ================= INIT CLICK (FIX 100%) ================= */
-function initClick(){
+/* SHOW FORM */
+function showLogin(){
+  mode="login";
+  splash.style.display="none";
+  auth.style.display="block";
+  formTitle.innerText="Đăng nhập";
 
-  const login = document.querySelector(".login");
-  const register = document.querySelector(".register");
-
-  login.onclick = openLogin;
-  register.onclick = openRegister;
-
-}
-
-/* gọi sau khi DOM chắc chắn có */
-setTimeout(initClick, 100);
-
-/* ================= LOGIN ================= */
-function openLogin(){
-  document.getElementById("modal").style.display="flex";
-  document.getElementById("modalTitle").innerText="Đăng nhập";
-}
-
-function openRegister(){
-  document.getElementById("modal").style.display="flex";
-  document.getElementById("modalTitle").innerText="Đăng ký";
-}
-
-/* đóng modal */
-document.getElementById("modal").onclick = function(e){
-  if(e.target.id==="modal"){
-    this.style.display="none";
+  // load nhớ mật khẩu
+  let saved = localStorage.getItem("user");
+  if(saved){
+    let u = JSON.parse(saved);
+    username.value = u.name;
+    password.value = u.pass;
   }
-};
-
-/* ================= FLOW ================= */
-function goNext(){
-
-  document.getElementById("modal").style.display="none";
-
-  document.getElementById("title").style.transform="translate(-50%,-50%) scale(1.3)";
-  document.getElementById("actions").style.opacity="0";
-
-  let flash=document.getElementById("flash");
-  flash.style.opacity="1";
-
-  setTimeout(()=>{
-    flash.style.opacity="0";
-
-    let loading=document.getElementById("loading");
-    loading.style.display="flex";
-
-    let fill=document.querySelector(".fill");
-    let p=0;
-
-    let interval=setInterval(()=>{
-      p+=10;
-      fill.style.width=p+"%";
-
-      if(p>=100){
-        clearInterval(interval);
-        loading.style.display="none";
-        document.getElementById("home").style.display="flex";
-      }
-
-    },200);
-
-  },600);
 }
 
-/* ================= PARTICLES ================= */
-const canvas=document.getElementById("c");
-const ctx=canvas.getContext("2d");
-
-function resize(){
-  canvas.width=innerWidth;
-  canvas.height=innerHeight;
-}
-resize();
-window.onresize=resize;
-
-let dots=[];
-
-for(let i=0;i<20;i++){
-  dots.push({
-    x:Math.random()*canvas.width,
-    y:Math.random()*canvas.height,
-    vx:(Math.random()-0.5)*2,
-    vy:(Math.random()-0.5)*2,
-    r:6+Math.random()*4,
-    color:`hsl(${Math.random()*360},70%,70%)`
-  });
+function showRegister(){
+  mode="register";
+  splash.style.display="none";
+  auth.style.display="block";
+  formTitle.innerText="Đăng ký";
 }
 
-function loop(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+/* SUBMIT */
+function submitAuth(){
+  let name = username.value;
+  let pass = password.value;
 
-  dots.forEach(d=>{
-    d.x+=d.vx;
-    d.y+=d.vy;
+  if(!name || !pass){
+    alert("Nhập đầy đủ!");
+    return;
+  }
 
-    if(d.x<0||d.x>canvas.width) d.vx*=-1;
-    if(d.y<0||d.y>canvas.height) d.vy*=-1;
+  let user = {name, pass};
 
-    ctx.beginPath();
-    ctx.arc(d.x,d.y,d.r,0,Math.PI*2);
-    ctx.fillStyle=d.color;
-    ctx.fill();
-  });
+  if(remember.checked){
+    localStorage.setItem("user",JSON.stringify(user));
+  }
 
-  requestAnimationFrame(loop);
+  localStorage.setItem("currentUser",JSON.stringify(user));
+
+  openProfile();
 }
 
-loop();
+/* TIKTOK FAKE */
+function fakeTikTok(){
+  let user = {
+    name:"TikTok_User_"+Math.floor(Math.random()*1000),
+    pass:"tiktok"
+  };
 
+  localStorage.setItem("currentUser",JSON.stringify(user));
+  openProfile();
+}
+
+/* PROFILE */
+function openProfile(){
+  auth.style.display="none";
+  profile.style.display="block";
+
+  let user = JSON.parse(localStorage.getItem("currentUser"));
+  newName.value = user.name;
+}
+
+function saveProfile(){
+  let user = JSON.parse(localStorage.getItem("currentUser"));
+  user.name = newName.value;
+
+  localStorage.setItem("currentUser",JSON.stringify(user));
+
+  alert("Đã lưu!");
+}
+
+/* AVATAR */
+function changeAvatar(e){
+  let file = e.target.files[0];
+  let reader = new FileReader();
+
+  reader.onload = function(){
+    avatar.style.backgroundImage = `url(${reader.result})`;
+    localStorage.setItem("avatar",reader.result);
+  }
+
+  reader.readAsDataURL(file);
+}
+
+/* LOAD AVATAR */
+window.onload = ()=>{
+  let ava = localStorage.getItem("avatar");
+  if(ava){
+    avatar.style.backgroundImage = `url(${ava})`;
+  }
+}
+
+/* BACK */
+function back(){
+  auth.style.display="none";
+  splash.style.display="flex";
+}
 </script>
 
 </body>
