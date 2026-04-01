@@ -9,6 +9,10 @@
 <style>
 
 /* ================= RESET ================= */
+*{
+  box-sizing:border-box;
+}
+
 body{
   margin:0;
   overflow:hidden;
@@ -24,7 +28,7 @@ body::after{
   background:url("IMG_0577.jpeg") no-repeat center;
   background-size:cover;
   filter:brightness(0.9);
-  pointer-events:none; /* 🔥 FIX CLICK */
+  pointer-events:none; /* 🔥 không chặn click */
   z-index:1;
 }
 
@@ -32,7 +36,7 @@ body::after{
 canvas{
   position:fixed;
   inset:0;
-  pointer-events:none; /* 🔥 FIX CLICK */
+  pointer-events:none; /* 🔥 không chặn click */
   z-index:2;
 }
 
@@ -44,7 +48,6 @@ canvas{
   transform:translate(-50%,-50%);
   text-align:center;
   z-index:10;
-  transition:0.5s;
 }
 
 .main{
@@ -84,50 +87,22 @@ canvas{
   font-weight:700;
   text-transform:uppercase;
   cursor:pointer;
-  position:relative;
-  overflow:hidden;
   z-index:30;
   transition:0.2s;
-}
-
-/* glow */
-@keyframes glow{
-  0%{box-shadow:0 0 10px rgba(255,255,255,0.2);}
-  50%{box-shadow:0 0 35px rgba(255,255,255,0.7);}
-  100%{box-shadow:0 0 10px rgba(255,255,255,0.2);}
-}
-
-.btn{
-  animation:glow 2s infinite;
 }
 
 .btn:active{
   transform:scale(0.9);
 }
 
-/* colors */
 .login{
   background:linear-gradient(#4da6ff,#6a5cff);
+  box-shadow:0 0 25px #4da6ff;
 }
 
 .register{
   background:linear-gradient(#ff4d4d,#ff9f00);
-}
-
-/* ripple */
-.ripple{
-  position:absolute;
-  border-radius:50%;
-  background:rgba(255,255,255,0.5);
-  transform:scale(0);
-  animation:ripple 0.6s linear;
-}
-
-@keyframes ripple{
-  to{
-    transform:scale(4);
-    opacity:0;
-  }
+  box-shadow:0 0 25px #ff4d4d;
 }
 
 /* ================= MODAL ================= */
@@ -137,7 +112,7 @@ canvas{
   display:none;
   justify-content:center;
   align-items:center;
-  backdrop-filter:blur(20px);
+  backdrop-filter:blur(15px);
   z-index:100;
 }
 
@@ -222,85 +197,79 @@ button{
 
 <body>
 
+<!-- PARTICLES -->
 <canvas id="c"></canvas>
 
+<!-- TITLE -->
 <div id="title">
   <div class="main">BATTLE</div>
   <div class="sub">SOCIAL</div>
 </div>
 
+<!-- BUTTONS -->
 <div id="actions">
-  <div class="btn login" id="loginBtn">
+  <div class="btn login" onclick="openLogin()">
     <span>ĐĂNG</span>
     <span>NHẬP</span>
   </div>
 
-  <div class="btn register" id="registerBtn">
+  <div class="btn register" onclick="openRegister()">
     <span>ĐĂNG</span>
     <span>KÝ</span>
   </div>
 </div>
 
+<!-- MODAL -->
 <div id="modal">
   <div class="card">
     <h3 id="modalTitle"></h3>
     <input placeholder="Email">
     <input type="password" placeholder="Password">
     <input placeholder="Tên">
-    <button id="continueBtn">TIẾP TỤC</button>
+    <button onclick="goNext()">TIẾP TỤC</button>
   </div>
 </div>
 
+<!-- FLASH -->
 <div id="flash"></div>
 
+<!-- LOADING -->
 <div id="loading">
   <div class="bar"><div class="fill"></div></div>
   <div style="margin-top:10px;">Loading...</div>
 </div>
 
+<!-- HOME -->
 <div id="home">
   🎮 Welcome to Battle Social
 </div>
 
 <script>
 
-/* ================= BUTTON CLICK ================= */
-const modal = document.getElementById("modal");
-const modalTitle = document.getElementById("modalTitle");
+/* ================= LOGIN ================= */
+function openLogin(){
+  document.getElementById("modal").style.display="flex";
+  document.getElementById("modalTitle").innerText="Đăng nhập";
+}
 
-document.getElementById("loginBtn").onclick = ()=>{
-  modal.style.display="flex";
-  modalTitle.innerText="Đăng nhập";
+function openRegister(){
+  document.getElementById("modal").style.display="flex";
+  document.getElementById("modalTitle").innerText="Đăng ký";
+}
+
+/* đóng modal */
+document.getElementById("modal").onclick = function(e){
+  if(e.target.id==="modal"){
+    this.style.display="none";
+  }
 };
 
-document.getElementById("registerBtn").onclick = ()=>{
-  modal.style.display="flex";
-  modalTitle.innerText="Đăng ký";
-};
+/* ================= FLOW ================= */
+function goNext(){
 
-modal.onclick = (e)=>{
-  if(e.target===modal) modal.style.display="none";
-};
+  document.getElementById("modal").style.display="none";
 
-/* ripple */
-document.querySelectorAll(".btn").forEach(btn=>{
-  btn.addEventListener("click",function(e){
-    let r=document.createElement("span");
-    r.className="ripple";
-    r.style.width=r.style.height="100px";
-    r.style.left=(e.offsetX-50)+"px";
-    r.style.top=(e.offsetY-50)+"px";
-    this.appendChild(r);
-    setTimeout(()=>r.remove(),600);
-  });
-});
-
-/* ================= SUCCESS FLOW ================= */
-document.getElementById("continueBtn").onclick = ()=>{
-
-  modal.style.display="none";
-
-  document.getElementById("title").style.transform="translate(-50%,-50%) scale(1.4)";
+  document.getElementById("title").style.transform="translate(-50%,-50%) scale(1.3)";
   document.getElementById("actions").style.opacity="0";
 
   let flash=document.getElementById("flash");
@@ -328,7 +297,7 @@ document.getElementById("continueBtn").onclick = ()=>{
     },200);
 
   },600);
-};
+}
 
 /* ================= PARTICLES ================= */
 const canvas=document.getElementById("c");
