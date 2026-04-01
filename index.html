@@ -21,34 +21,117 @@ body::after{
   filter:brightness(0.75);
 }
 
-/* TITLE */
+/* ================= LOGO GAME ================= */
 #title{
   position:fixed;
-  top:35%;
+  top:30%;
   width:100%;
   text-align:center;
   z-index:20;
 }
 
-#title h1{
-  margin:0;
-  font-size:48px;
+.logo{
+  position:relative;
+  display:inline-block;
+}
+
+/* AURA */
+.logo::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:320px;
+  height:160px;
+  background:radial-gradient(circle,
+    rgba(255,80,80,0.6),
+    rgba(255,80,80,0.2),
+    transparent);
+  filter:blur(40px);
+  z-index:-1;
+  animation:aura 3s ease-in-out infinite;
+}
+
+@keyframes aura{
+  0%,100%{transform:translate(-50%,-50%) scale(1);}
+  50%{transform:translate(-50%,-50%) scale(1.2);}
+}
+
+/* BATTLE */
+.battle{
+  display:block;
+  font-size:72px;
   font-weight:900;
-  background:linear-gradient(90deg,#ff2d2d,#ff6a00);
+  letter-spacing:5px;
+
+  background:linear-gradient(90deg,#ff2d2d,#ff6a00,#ff2d2d);
+  background-size:200% auto;
+
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
-  text-shadow:0 0 20px rgba(255,80,80,0.8);
+
+  text-shadow:
+    0 2px 0 #aa0000,
+    0 0 10px rgba(255,50,50,0.9),
+    0 0 25px rgba(255,50,50,0.8),
+    0 0 60px rgba(255,50,50,0.6),
+    0 0 120px rgba(255,50,50,0.5);
+
+  animation:
+    glow 2s infinite alternate,
+    shine 4s linear infinite,
+    pulse 2.5s ease-in-out infinite;
 }
 
-#title h2{
-  margin-top:5px;
-  font-size:22px;
-  background:linear-gradient(90deg,#ffd000,#ff9900);
+/* SOCIAL */
+.social{
+  display:block;
+  margin-top:10px;
+  font-size:30px;
+  font-weight:800;
+  letter-spacing:4px;
+
+  background:linear-gradient(90deg,#ffd000,#ff9a00,#ffd000);
+  background-size:200% auto;
+
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
+
+  text-shadow:
+    0 0 8px rgba(255,200,0,0.9),
+    0 0 20px rgba(255,200,0,0.8),
+    0 0 40px rgba(255,200,0,0.6);
+
+  animation:shine 5s linear infinite;
 }
 
-/* DOT */
+/* EFFECTS */
+@keyframes glow{
+  from{
+    text-shadow:
+      0 0 10px rgba(255,50,50,0.8),
+      0 0 25px rgba(255,50,50,0.6);
+  }
+  to{
+    text-shadow:
+      0 0 20px rgba(255,100,100,1),
+      0 0 40px rgba(255,50,50,0.9),
+      0 0 80px rgba(255,50,50,0.7),
+      0 0 140px rgba(255,50,50,0.5);
+  }
+}
+
+@keyframes shine{
+  to{ background-position:200% center; }
+}
+
+@keyframes pulse{
+  0%,100%{transform:scale(1);}
+  50%{transform:scale(1.05);}
+}
+
+/* ================= DOT ================= */
 .dot{
   position:absolute;
   border-radius:50%;
@@ -57,7 +140,7 @@ body::after{
   transition:0.3s;
 }
 
-/* FAB */
+/* ================= FAB ================= */
 #fab{
   position:fixed;
   bottom:20px;
@@ -76,7 +159,7 @@ body::after{
   box-shadow:0 0 20px rgba(177,108,255,0.6);
 }
 
-/* MENU */
+/* ================= MENU ================= */
 #menu{
   position:fixed;
   bottom:100px;
@@ -106,7 +189,7 @@ body::after{
   cursor:pointer;
 }
 
-/* AUTH MODAL */
+/* ================= AUTH ================= */
 #authModal{
   position:fixed;
   inset:0;
@@ -147,10 +230,12 @@ button{
 
 <body>
 
-<!-- TITLE -->
+<!-- LOGO -->
 <div id="title">
-  <h1>BATTLE</h1>
-  <h2>SOCIAL</h2>
+  <div class="logo">
+    <span class="battle">BATTLE</span>
+    <span class="social">SOCIAL</span>
+  </div>
 </div>
 
 <!-- AUTH -->
@@ -207,7 +292,7 @@ authModal.onclick = (e)=>{
   }
 };
 
-/* DOT SYSTEM (KHÔNG CÒN NỘI DUNG) */
+/* DOT SYSTEM */
 let dots=[];
 
 for(let i=0;i<20;i++){
@@ -224,7 +309,6 @@ for(let i=0;i<20;i++){
   d.tx=Math.random()*innerWidth;
   d.ty=Math.random()*innerHeight;
 
-  /* CLICK = CHỈ BIẾN MẤT */
   d.onclick=()=>{
     d.style.transform="scale(0)";
     d.style.opacity=0;
