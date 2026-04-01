@@ -17,11 +17,10 @@ body::after{
   inset:0;
   background:url("IMG_0577.jpeg") no-repeat center;
   background-size:cover;
-  filter:brightness(0.8);
+  filter:brightness(0.85);
   z-index:0;
 }
 
-/* CANVAS */
 canvas{
   position:fixed;
   inset:0;
@@ -31,7 +30,7 @@ canvas{
 /* TITLE */
 #title{
   position:fixed;
-  top:35%;
+  top:34%;
   left:50%;
   transform:translate(-50%,-50%);
   text-align:center;
@@ -39,65 +38,70 @@ canvas{
 }
 
 #title .main{
-  font-size:60px;
+  font-size:62px;
   font-weight:900;
-  background:linear-gradient(#ff5a5a,#ff0000);
+  letter-spacing:2px;
+  background:linear-gradient(#ff4d4d,#ff0000);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
-  text-shadow:0 0 25px red;
+  text-shadow:0 0 30px rgba(255,0,0,0.8);
 }
 
 #title .sub{
-  font-size:42px;
-  margin-top:-10px;
+  font-size:44px;
+  font-weight:900;
+  margin-top:-12px;
+  letter-spacing:2px;
   background:linear-gradient(#ffd86b,#ff9f00);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
-  text-shadow:0 0 25px orange;
+  text-shadow:0 0 25px rgba(255,170,0,0.8);
 }
 
 /* BUTTONS */
 #actions{
   position:fixed;
-  top:50%;
+  top:52%;
   left:50%;
   transform:translate(-50%,-50%);
   display:flex;
-  gap:15px;
+  gap:18px;
   z-index:20;
 }
 
-/* BUTTON BASE */
+/* BUTTON */
 .btn{
-  padding:14px 24px;
+  padding:14px 28px;
   border-radius:40px;
+  font-size:14px;
+  font-weight:700;
+  letter-spacing:1px;
   color:white;
-  font-weight:600;
-  display:flex;
-  align-items:center;
-  gap:8px;
-  backdrop-filter:blur(10px);
+  text-transform:uppercase;
   cursor:pointer;
   transition:0.25s;
+  backdrop-filter:blur(10px);
 }
 
 /* LOGIN */
 .login{
   background:linear-gradient(135deg,#3aa0ff,#7f6cff);
-  box-shadow:0 0 15px #3aa0ff,0 0 30px #7f6cff;
+  box-shadow:0 0 12px rgba(58,160,255,0.6),
+             0 0 25px rgba(127,108,255,0.5);
 }
 
 /* REGISTER */
 .register{
   background:linear-gradient(135deg,#ff4d6d,#ff9f00);
-  box-shadow:0 0 15px #ff4d6d,0 0 30px #ff9f00;
+  box-shadow:0 0 12px rgba(255,77,109,0.6),
+             0 0 25px rgba(255,159,0,0.5);
 }
 
 .btn:active{
   transform:scale(0.95);
 }
 
-/* AUTH MODAL */
+/* AUTH */
 #authModal{
   position:fixed;
   inset:0;
@@ -146,10 +150,10 @@ button{
   <div class="sub">SOCIAL</div>
 </div>
 
-<!-- BUTTONS -->
+<!-- BUTTON -->
 <div id="actions">
-  <div class="btn login" onclick="openLogin()">🔒 Đăng nhập</div>
-  <div class="btn register" onclick="openRegister()">👤 Đăng ký</div>
+  <div class="btn login" onclick="openLogin()">ĐĂNG NHẬP</div>
+  <div class="btn register" onclick="openRegister()">ĐĂNG KÝ</div>
 </div>
 
 <!-- AUTH -->
@@ -164,20 +168,20 @@ button{
 </div>
 
 <script>
-const canvas = document.getElementById("c");
-const ctx = canvas.getContext("2d");
+const canvas=document.getElementById("c");
+const ctx=canvas.getContext("2d");
 
 function resize(){
-  canvas.width = innerWidth;
-  canvas.height = innerHeight;
+  canvas.width=innerWidth;
+  canvas.height=innerHeight;
 }
 resize();
-onresize = resize;
+onresize=resize;
 
 /* AUTH */
-const authModal = document.getElementById("authModal");
-const authTitle = document.getElementById("authTitle");
-const authBtn = document.getElementById("authBtn");
+const authModal=document.getElementById("authModal");
+const authTitle=document.getElementById("authTitle");
+const authBtn=document.getElementById("authBtn");
 
 function openLogin(){
   authModal.style.display="flex";
@@ -191,8 +195,8 @@ function openRegister(){
   authBtn.innerText="Register";
 }
 
-authModal.onclick = (e)=>{
-  if(e.target === authModal){
+authModal.onclick=(e)=>{
+  if(e.target===authModal){
     authModal.style.display="none";
   }
 };
@@ -237,23 +241,16 @@ canvas.addEventListener("touchend",e=>{
   }
 });
 
-/* mouse */
-canvas.addEventListener("mousemove",e=>{
-  touches["m"]={x:e.clientX,y:e.clientY,vx:0,vy:0};
-});
-
 /* ANIMATE */
 function animate(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
   dots.forEach(d=>{
-
     d.vx+=(Math.random()-0.5)*0.05;
     d.vy+=(Math.random()-0.5)*0.05;
 
     for(let id in touches){
       let t=touches[id];
-
       let dx=t.x-d.x;
       let dy=t.y-d.y;
       let dist=Math.sqrt(dx*dx+dy*dy);
@@ -262,15 +259,7 @@ function animate(){
         d.vx+=dx*0.002;
         d.vy+=dy*0.002;
       }
-
-      if(dist<80){
-        d.vx+=t.vx*0.2;
-        d.vy+=t.vy*0.2;
-      }
     }
-
-    d.vx=Math.max(Math.min(d.vx,2),-2);
-    d.vy=Math.max(Math.min(d.vy,2),-2);
 
     d.x+=d.vx;
     d.y+=d.vy;
@@ -292,43 +281,19 @@ function animate(){
       let dx=b.x-a.x;
       let dy=b.y-a.y;
       let dist=Math.sqrt(dx*dx+dy*dy);
-
       let minDist=(a.size/2+b.size/2);
 
       if(dist<minDist){
-
         if(dist===0) dist=0.1;
 
         let nx=dx/dist;
         let ny=dy/dist;
-
         let overlap=minDist-dist;
 
-        let push=overlap*0.8;
-
-        a.x-=nx*push;
-        a.y-=ny*push;
-
-        b.x+=nx*push;
-        b.y+=ny*push;
-
-        let force=overlap*0.1;
-
-        a.vx-=nx*force;
-        a.vy-=ny*force;
-
-        b.vx+=nx*force;
-        b.vy+=ny*force;
-      }
-      else if(dist<100){
-
-        let force=(100-dist)*0.0008;
-
-        a.vx-=dx*force;
-        a.vy-=dy*force;
-
-        b.vx+=dx*force;
-        b.vy+=dy*force;
+        a.x-=nx*overlap*0.8;
+        a.y-=ny*overlap*0.8;
+        b.x+=nx*overlap*0.8;
+        b.y+=ny*overlap*0.8;
       }
     }
   }
@@ -342,7 +307,6 @@ function animate(){
 
   requestAnimationFrame(animate);
 }
-
 animate();
 </script>
 
