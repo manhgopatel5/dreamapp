@@ -291,7 +291,15 @@ authModal.onclick = (e)=>{
     authModal.style.display = "none";
   }
 };
+authBtn.onclick = () => {
+  loginSuccess();
+};
+function loginSuccess(){
+  console.log("login ok");
 
+  authModal.style.display = "none";
+  openGame();
+}
 /* DOT SYSTEM */
 let dots=[];
 
@@ -338,6 +346,126 @@ function animate(){
 }
 animate();
 </script>
+<script>
 
+// PLAYER
+let player = {
+  hp:100,
+  attack:10,
+  defense:5
+};
+// 👉 GỌI HÀM NÀY SAU KHI LOGIN THÀNH CÔNG
+function openGame(){
+  document.getElementById("gameScreen").style.display = "block";
+
+  document.querySelectorAll("body > div:not(#gameScreen)")
+    .forEach(el => el.style.display = "none");
+}
+
+// TEST nhanh (bạn có thể xoá)
+// setTimeout(openGame, 2000);
+
+
+// BATTLE
+function battle(){
+  let enemy = {hp:100, attack:8, defense:4};
+
+  let result = fight(player, enemy);
+
+  if(result === "win"){
+    alert("🔥 Thắng!");
+  }else{
+    alert("💀 Thua!");
+  }
+}
+
+// COMBAT
+function fight(p1, p2){
+  while(p1.hp > 0 && p2.hp > 0){
+    p2.hp -= Math.max(0, p1.attack - p2.defense);
+    if(p2.hp <= 0) return "win";
+
+    p1.hp -= Math.max(0, p2.attack - p1.defense);
+  }
+  return "lose";
+}
+
+</script>
+<!-- GAME SCREEN -->
+<div id="gameScreen" style="display:none">
+
+<style>
+#gameScreen{
+  position:fixed;
+  inset:0;
+  background:#0a0a12;
+  z-index:9999;
+  color:white;
+}
+
+/* giữ nguyên style gọn nhẹ */
+.gameWrap{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:320px;
+  height:420px;
+}
+
+.character{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  background:#00f0ff;
+  box-shadow:0 0 20px #00f0ff;
+}
+
+.slot{
+  position:absolute;
+  width:70px;
+  height:70px;
+  border:2px solid #00f0ff;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.weapon{ top:50%; right:-10px; transform:translateY(-50%);}
+.armor{ top:50%; left:-10px; transform:translateY(-50%);}
+.pants{ bottom:-10px; left:50%; transform:translateX(-50%);}
+.shield{ top:-10px; left:50%; transform:translateX(-50%);}
+
+.btnFight{
+  position:absolute;
+  bottom:30px;
+  left:50%;
+  transform:translateX(-50%);
+  padding:12px 20px;
+  background:#00f0ff;
+  border:none;
+  border-radius:20px;
+}
+</style>
+
+<div class="gameWrap">
+
+  <div class="character"></div>
+
+  <div class="slot weapon">⚔️</div>
+  <div class="slot armor">👕</div>
+  <div class="slot pants">👖</div>
+  <div class="slot shield">🛡</div>
+
+</div>
+
+<button class="btnFight" onclick="battle()">⚔️ Battle</button>
+
+</div>
 </body>
 </html>
