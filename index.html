@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Battle Social</title>
+<meta charset="UTF-8">
 
 <style>
 body{
@@ -14,42 +12,45 @@ body{
   background:#0b1d2a;
 }
 
-/* background image fallback */
+/* BG */
 .bg{
   position:fixed;
   inset:0;
   background:url("IMG_0577.jpeg") center/cover no-repeat;
-  opacity:0.8;
+  opacity:0.85;
 }
 
-/* canvas */
+/* CANVAS */
 canvas{
   position:fixed;
   inset:0;
 }
 
-/* title */
+/* TITLE */
 #title{
   position:fixed;
   top:30%;
   left:50%;
   transform:translate(-50%,-50%);
   text-align:center;
+  transition:0.5s;
 }
 
 .main{
   font-size:60px;
   font-weight:900;
   color:#ff2a2a;
+  text-shadow:0 0 30px red;
 }
 
 .sub{
   font-size:42px;
   margin-top:-10px;
   color:#ffb300;
+  text-shadow:0 0 20px orange;
 }
 
-/* buttons */
+/* BUTTONS */
 #actions{
   position:fixed;
   top:50%;
@@ -57,6 +58,7 @@ canvas{
   transform:translate(-50%,-50%);
   display:flex;
   gap:20px;
+  transition:0.5s;
 }
 
 .btn{
@@ -71,6 +73,15 @@ canvas{
   font-weight:700;
   text-transform:uppercase;
   cursor:pointer;
+  position:relative;
+  overflow:hidden;
+  animation:pulse 2s infinite;
+}
+
+@keyframes pulse{
+  0%{box-shadow:0 0 10px rgba(255,255,255,0.2);}
+  50%{box-shadow:0 0 30px rgba(255,255,255,0.6);}
+  100%{box-shadow:0 0 10px rgba(255,255,255,0.2);}
 }
 
 .login{
@@ -81,40 +92,99 @@ canvas{
   background:linear-gradient(#ff4d4d,#ff9f00);
 }
 
-/* modal */
+/* RIPPLE */
+.ripple{
+  position:absolute;
+  border-radius:50%;
+  background:rgba(255,255,255,0.5);
+  transform:scale(0);
+  animation:ripple 0.6s linear;
+}
+
+@keyframes ripple{
+  to{transform:scale(4);opacity:0;}
+}
+
+/* MODAL */
 #modal{
   position:fixed;
   inset:0;
   display:none;
   justify-content:center;
   align-items:center;
-  background:rgba(0,0,0,0.5);
+  backdrop-filter:blur(20px);
 }
 
 .card{
   width:80%;
-  background:#111;
+  background:rgba(0,0,0,0.85);
   padding:20px;
-  border-radius:15px;
-  color:#fff;
+  border-radius:20px;
+  color:white;
 }
 
 input{
   width:100%;
   margin-top:10px;
-  padding:10px;
-  border-radius:10px;
+  padding:12px;
   border:none;
+  border-radius:12px;
 }
 
 button{
-  margin-top:10px;
+  margin-top:15px;
   padding:12px;
   border:none;
-  border-radius:10px;
-  background:#6a5cff;
-  color:#fff;
+  border-radius:20px;
+  background:linear-gradient(135deg,#6a5cff,#b16cff);
+  color:white;
   width:100%;
+}
+
+/* FLASH */
+#flash{
+  position:fixed;
+  inset:0;
+  background:white;
+  opacity:0;
+  transition:0.5s;
+}
+
+/* LOADING */
+#loading{
+  position:fixed;
+  inset:0;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  background:#050f18;
+  color:white;
+}
+
+.bar{
+  width:70%;
+  height:10px;
+  background:#222;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#6a5cff,#ff4d4d);
+}
+
+#home{
+  position:fixed;
+  inset:0;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  color:white;
+  font-size:30px;
+  background:#050f18;
 }
 </style>
 </head>
@@ -130,12 +200,11 @@ button{
 </div>
 
 <div id="actions">
-  <div class="btn login" onclick="openLogin()">
+  <div class="btn login">
     <span>ĐĂNG</span>
     <span>NHẬP</span>
   </div>
-
-  <div class="btn register" onclick="openRegister()">
+  <div class="btn register">
     <span>ĐĂNG</span>
     <span>KÝ</span>
   </div>
@@ -147,117 +216,165 @@ button{
     <input placeholder="Email">
     <input type="password" placeholder="Password">
     <input placeholder="Tên">
-    <button id="btnModal"></button>
+    <button onclick="success()">TIẾP TỤC</button>
   </div>
 </div>
 
+<div id="flash"></div>
+
+<div id="loading">
+  <div class="bar"><div class="fill"></div></div>
+  <div style="margin-top:10px;">Loading...</div>
+</div>
+
+<div id="home">
+  🎮 Welcome to Battle Social
+</div>
+
 <script>
-/* SAFE START */
-const canvas = document.getElementById("c");
-const ctx = canvas.getContext("2d");
-
-function resize(){
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-resize();
-window.onresize = resize;
-
 /* MODAL */
-const modal = document.getElementById("modal");
-const titleModal = document.getElementById("titleModal");
-const btnModal = document.getElementById("btnModal");
+const modal=document.getElementById("modal");
+const titleModal=document.getElementById("titleModal");
 
-function openLogin(){
+document.querySelector(".login").onclick=()=>{
   modal.style.display="flex";
   titleModal.innerText="Đăng nhập";
-  btnModal.innerText="Login";
-}
-
-function openRegister(){
-  modal.style.display="flex";
-  titleModal.innerText="Đăng ký";
-  btnModal.innerText="Register";
-}
-
-modal.onclick = e=>{
-  if(e.target === modal) modal.style.display="none";
 };
 
-/* PARTICLES (SAFE) */
-let dots = [];
+document.querySelector(".register").onclick=()=>{
+  modal.style.display="flex";
+  titleModal.innerText="Đăng ký";
+};
+
+modal.onclick=e=>{
+  if(e.target===modal) modal.style.display="none";
+};
+
+/* RIPPLE */
+document.querySelectorAll(".btn").forEach(btn=>{
+  btn.addEventListener("click",function(e){
+    let r=document.createElement("span");
+    r.className="ripple";
+    r.style.width=r.style.height="100px";
+    r.style.left=(e.offsetX-50)+"px";
+    r.style.top=(e.offsetY-50)+"px";
+    this.appendChild(r);
+    setTimeout(()=>r.remove(),600);
+  });
+});
+
+/* SUCCESS FLOW */
+function success(){
+
+  modal.style.display="none";
+
+  document.getElementById("title").style.transform="translate(-50%,-50%) scale(1.5)";
+  document.getElementById("actions").style.opacity="0";
+
+  let flash=document.getElementById("flash");
+  flash.style.opacity="1";
+
+  setTimeout(()=>{
+    flash.style.opacity="0";
+
+    document.getElementById("loading").style.display="flex";
+
+    let fill=document.querySelector(".fill");
+    let p=0;
+
+    let interval=setInterval(()=>{
+      p+=10;
+      fill.style.width=p+"%";
+
+      if(p>=100){
+        clearInterval(interval);
+
+        document.getElementById("loading").style.display="none";
+        document.getElementById("home").style.display="flex";
+      }
+
+    },200);
+
+  },600);
+}
+
+/* PARTICLES */
+const canvas=document.getElementById("c");
+const ctx=canvas.getContext("2d");
+
+function resize(){
+  canvas.width=innerWidth;
+  canvas.height=innerHeight;
+}
+resize();
+onresize=resize;
+
+let dots=[];
 
 for(let i=0;i<20;i++){
   dots.push({
-    x: Math.random()*canvas.width,
-    y: Math.random()*canvas.height,
-    vx: (Math.random()-0.5)*2,
-    vy: (Math.random()-0.5)*2,
-    r: 6 + Math.random()*6,
-    color: `hsl(${Math.random()*360},70%,70%)`
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    vx:(Math.random()-0.5)*2,
+    vy:(Math.random()-0.5)*2,
+    r:6+Math.random()*4,
+    color:`hsl(${Math.random()*360},70%,70%)`
   });
 }
 
-/* LOOP */
 function loop(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  /* move */
   for(let i=0;i<dots.length;i++){
-    let d = dots[i];
+    let d=dots[i];
 
-    d.x += d.vx;
-    d.y += d.vy;
+    d.x+=d.vx;
+    d.y+=d.vy;
 
-    /* wall */
-    if(d.x < 0 || d.x > canvas.width) d.vx *= -1;
-    if(d.y < 0 || d.y > canvas.height) d.vy *= -1;
+    if(d.x<0||d.x>canvas.width) d.vx*=-1;
+    if(d.y<0||d.y>canvas.height) d.vy*=-1;
   }
 
-  /* collision */
   for(let i=0;i<dots.length;i++){
     for(let j=i+1;j<dots.length;j++){
 
-      let a = dots[i];
-      let b = dots[j];
+      let a=dots[i];
+      let b=dots[j];
 
-      let dx = b.x - a.x;
-      let dy = b.y - a.y;
-      let dist = Math.sqrt(dx*dx + dy*dy) || 0.001;
+      let dx=b.x-a.x;
+      let dy=b.y-a.y;
+      let dist=Math.sqrt(dx*dx+dy*dy)||0.001;
 
-      let min = a.r + b.r;
+      let min=a.r+b.r;
 
-      if(dist < min){
+      if(dist<min){
 
-        let nx = dx / dist;
-        let ny = dy / dist;
+        let nx=dx/dist;
+        let ny=dy/dist;
+        let overlap=min-dist;
 
-        let overlap = min - dist;
+        a.x-=nx*overlap/2;
+        a.y-=ny*overlap/2;
+        b.x+=nx*overlap/2;
+        b.y+=ny*overlap/2;
 
-        a.x -= nx * overlap/2;
-        a.y -= ny * overlap/2;
-        b.x += nx * overlap/2;
-        b.y += ny * overlap/2;
-
-        a.vx -= nx;
-        a.vy -= ny;
-        b.vx += nx;
-        b.vy += ny;
+        a.vx-=nx;
+        a.vy-=ny;
+        b.vx+=nx;
+        b.vy+=ny;
       }
     }
   }
 
-  /* draw */
-  for(let d of dots){
+  dots.forEach(d=>{
     ctx.beginPath();
-    ctx.arc(d.x, d.y, d.r, 0, Math.PI*2);
-    ctx.fillStyle = d.color;
+    ctx.arc(d.x,d.y,d.r,0,Math.PI*2);
+    ctx.fillStyle=d.color;
     ctx.fill();
-  }
+  });
 
   requestAnimationFrame(loop);
 }
-
 loop();
 </script>
 
