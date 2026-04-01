@@ -28,14 +28,15 @@ body{
   background-size:cover;
   filter:brightness(0.9);
   z-index:0;
+  pointer-events:none;
 }
 
 /* ================= CANVAS ================= */
 canvas{
   position:fixed;
   inset:0;
-  pointer-events:none; /* 🔥 không chặn click */
-  z-index:2;
+  z-index:1;
+  pointer-events:none;
 }
 
 /* ================= TITLE ================= */
@@ -87,6 +88,7 @@ canvas{
   cursor:pointer;
   z-index:30;
   transition:0.2s;
+  pointer-events:auto;
 }
 
 .btn:active{
@@ -194,6 +196,7 @@ button{
 </head>
 
 <body>
+
 <div class="bg"></div>
 <canvas id="c"></canvas>
 
@@ -237,8 +240,19 @@ button{
 
 <script>
 
-/* ================= FIX CLICK CHUẨN ================= */
-openRegister);
+/* ================= INIT CLICK (FIX 100%) ================= */
+function initClick(){
+
+  const login = document.querySelector(".login");
+  const register = document.querySelector(".register");
+
+  login.onclick = openLogin;
+  register.onclick = openRegister;
+
+}
+
+/* gọi sau khi DOM chắc chắn có */
+setTimeout(initClick, 100);
 
 /* ================= LOGIN ================= */
 function openLogin(){
@@ -337,13 +351,7 @@ function loop(){
 }
 
 loop();
-/* ===== FIX CLICK CHUẨN IOS ===== */
-setTimeout(function(){
 
-  document.querySelector(".login").addEventListener("click", openLogin);
-  document.querySelector(".register").addEventListener("click", openRegister);
-
-}, 0);
 </script>
 
 </body>
