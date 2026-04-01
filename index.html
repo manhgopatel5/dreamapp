@@ -393,6 +393,11 @@ function startGame(){
   document.getElementById("gameScreen").style.display="block";
   document.getElementById("title").style.display="none";
 
+  // 🔥 ẨN DOT
+  document.querySelectorAll(".dot").forEach(d=>{
+    d.style.display="none";
+  });
+
   document.getElementById("g_name").innerText = currentUser;
   document.getElementById("g_coin").innerText = userData.coin;
 
@@ -444,9 +449,17 @@ function logout(){
 style="
 display:none;
 position:fixed;
-inset:0;
-background:url('https://raw.githubusercontent.com/manhgopate15/dreamapp/main/5C41187C-9AD8-4C7F-8AA1-5AD53A68C4FE.png') center/cover no-repeat;
-z-index:9998;
+top:0;
+left:0;
+width:100%;
+height:100%;
+
+background-image:url('https://raw.githubusercontent.com/manhgopate15/dreamapp/main/5C41187C-9AD8-4C7F-8AA1-5AD53A68C4FE.png');
+background-size:cover;
+background-position:center;
+background-repeat:no-repeat;
+
+z-index:99999;
 ">
   <!-- TOP BAR -->
   <div style="display:flex; justify-content:space-between; padding:10px; background:#0008;">
