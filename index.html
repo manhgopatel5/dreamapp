@@ -28,7 +28,7 @@ body::after{
   background:url("IMG_0577.jpeg") no-repeat center;
   background-size:cover;
   filter:brightness(0.9);
-  pointer-events:none; /* 🔥 không chặn click */
+  pointer-events:none;
   z-index:1;
 }
 
@@ -191,64 +191,31 @@ button{
   background:#050f18;
   z-index:400;
 }
-/* ===== FIX CLICK KHÔNG ĐƯỢC ===== */
 
-/* canvas không chặn */
-canvas{
-  pointer-events:none !important;
-  z-index:1 !important;
-}
-
-/* background không chặn */
-.bg,
-body::after{
-  pointer-events:none !important;
-  z-index:1 !important;
-}
-
-/* UI nằm trên */
-#title{
-  position:fixed;
-  z-index:10 !important;
-}
-
-#actions{
-  position:fixed;
-  z-index:20 !important;
-}
-
-.btn{
-  position:relative;
-  z-index:30 !important;
-}
 </style>
 </head>
 
 <body>
 
-<!-- PARTICLES -->
 <canvas id="c"></canvas>
 
-<!-- TITLE -->
 <div id="title">
   <div class="main">BATTLE</div>
   <div class="sub">SOCIAL</div>
 </div>
 
-<!-- BUTTONS -->
 <div id="actions">
-  <div class="btn login" onclick="openLogin()">
+  <div class="btn login">
     <span>ĐĂNG</span>
     <span>NHẬP</span>
   </div>
 
-  <div class="btn register" onclick="openRegister()">
+  <div class="btn register">
     <span>ĐĂNG</span>
     <span>KÝ</span>
   </div>
 </div>
 
-<!-- MODAL -->
 <div id="modal">
   <div class="card">
     <h3 id="modalTitle"></h3>
@@ -259,21 +226,26 @@ body::after{
   </div>
 </div>
 
-<!-- FLASH -->
 <div id="flash"></div>
 
-<!-- LOADING -->
 <div id="loading">
   <div class="bar"><div class="fill"></div></div>
   <div style="margin-top:10px;">Loading...</div>
 </div>
 
-<!-- HOME -->
 <div id="home">
   🎮 Welcome to Battle Social
 </div>
 
 <script>
+
+/* ================= FIX CLICK CHUẨN ================= */
+window.addEventListener("load", function(){
+
+  document.querySelector(".login").addEventListener("click", openLogin);
+  document.querySelector(".register").addEventListener("click", openRegister);
+
+});
 
 /* ================= LOGIN ================= */
 function openLogin(){
@@ -337,7 +309,7 @@ function resize(){
   canvas.height=innerHeight;
 }
 resize();
-onresize=resize;
+window.onresize=resize;
 
 let dots=[];
 
@@ -355,48 +327,13 @@ for(let i=0;i<20;i++){
 function loop(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  for(let i=0;i<dots.length;i++){
-    let d=dots[i];
-
+  dots.forEach(d=>{
     d.x+=d.vx;
     d.y+=d.vy;
 
     if(d.x<0||d.x>canvas.width) d.vx*=-1;
     if(d.y<0||d.y>canvas.height) d.vy*=-1;
-  }
 
-  for(let i=0;i<dots.length;i++){
-    for(let j=i+1;j<dots.length;j++){
-
-      let a=dots[i];
-      let b=dots[j];
-
-      let dx=b.x-a.x;
-      let dy=b.y-a.y;
-      let dist=Math.sqrt(dx*dx+dy*dy)||0.001;
-
-      let min=a.r+b.r;
-
-      if(dist<min){
-
-        let nx=dx/dist;
-        let ny=dy/dist;
-        let overlap=min-dist;
-
-        a.x-=nx*overlap/2;
-        a.y-=ny*overlap/2;
-        b.x+=nx*overlap/2;
-        b.y+=ny*overlap/2;
-
-        a.vx-=nx;
-        a.vy-=ny;
-        b.vx+=nx;
-        b.vy+=ny;
-      }
-    }
-  }
-
-  dots.forEach(d=>{
     ctx.beginPath();
     ctx.arc(d.x,d.y,d.r,0,Math.PI*2);
     ctx.fillStyle=d.color;
@@ -405,15 +342,9 @@ function loop(){
 
   requestAnimationFrame(loop);
 }
+
 loop();
 
-/* ===== FIX CLICK ===== */
-window.onload = function(){
-
-  document.querySelector(".login").addEventListener("click", openLogin);
-  document.querySelector(".register").addEventListener("click", openRegister);
-
-};
 </script>
 
 </body>
