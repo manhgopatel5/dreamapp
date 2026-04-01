@@ -10,7 +10,7 @@ body{
   font-family:-apple-system, sans-serif;
 }
 
-/* BACKGROUND NGOÀI */
+/* BACKGROUND */
 body::after{
   content:"";
   position:fixed;
@@ -19,13 +19,9 @@ body::after{
   background-size:cover;
   z-index:0;
   filter:brightness(0.75);
-
-  /* FIX QUAN TRỌNG */
-  opacity: var(--bgOpacity,1);
-  transition:0.3s;
 }
 
-/* LOGO */
+/* ================= LOGO GAME ================= */
 #title{
   position:fixed;
   top:30%;
@@ -34,15 +30,117 @@ body::after{
   z-index:20;
 }
 
-/* DOT */
+.logo{
+  position:relative;
+  display:inline-block;
+}
+
+/* AURA */
+.logo::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:320px;
+  height:160px;
+  background:radial-gradient(circle,
+    rgba(255,80,80,0.6),
+    rgba(255,80,80,0.2),
+    transparent);
+  filter:blur(40px);
+  z-index:-1;
+  animation:aura 3s ease-in-out infinite;
+}
+
+@keyframes aura{
+  0%,100%{transform:translate(-50%,-50%) scale(1);}
+  50%{transform:translate(-50%,-50%) scale(1.2);}
+}
+
+/* BATTLE */
+.battle{
+  display:block;
+  font-size:72px;
+  font-weight:900;
+  letter-spacing:5px;
+
+  background:linear-gradient(90deg,#ff2d2d,#ff6a00,#ff2d2d);
+  background-size:200% auto;
+
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+
+  text-shadow:
+    0 2px 0 #aa0000,
+    0 0 10px rgba(255,50,50,0.9),
+    0 0 25px rgba(255,50,50,0.8),
+    0 0 60px rgba(255,50,50,0.6),
+    0 0 120px rgba(255,50,50,0.5);
+
+  animation:
+    glow 2s infinite alternate,
+    shine 4s linear infinite,
+    pulse 2.5s ease-in-out infinite;
+}
+
+/* SOCIAL */
+.social{
+  display:block;
+  margin-top:10px;
+  font-size:30px;
+  font-weight:800;
+  letter-spacing:4px;
+
+  background:linear-gradient(90deg,#ffd000,#ff9a00,#ffd000);
+  background-size:200% auto;
+
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+
+  text-shadow:
+    0 0 8px rgba(255,200,0,0.9),
+    0 0 20px rgba(255,200,0,0.8),
+    0 0 40px rgba(255,200,0,0.6);
+
+  animation:shine 5s linear infinite;
+}
+
+/* EFFECTS */
+@keyframes glow{
+  from{
+    text-shadow:
+      0 0 10px rgba(255,50,50,0.8),
+      0 0 25px rgba(255,50,50,0.6);
+  }
+  to{
+    text-shadow:
+      0 0 20px rgba(255,100,100,1),
+      0 0 40px rgba(255,50,50,0.9),
+      0 0 80px rgba(255,50,50,0.7),
+      0 0 140px rgba(255,50,50,0.5);
+  }
+}
+
+@keyframes shine{
+  to{ background-position:200% center; }
+}
+
+@keyframes pulse{
+  0%,100%{transform:scale(1);}
+  50%{transform:scale(1.05);}
+}
+
+/* ================= DOT ================= */
 .dot{
   position:absolute;
   border-radius:50%;
   z-index:5;
   cursor:pointer;
+  transition:0.3s;
 }
 
-/* FAB */
+/* ================= FAB ================= */
 #fab{
   position:fixed;
   bottom:20px;
@@ -57,9 +155,11 @@ body::after{
   color:white;
   font-size:30px;
   z-index:5000;
+  cursor:pointer;
+  box-shadow:0 0 20px rgba(177,108,255,0.6);
 }
 
-/* MENU */
+/* ================= MENU ================= */
 #menu{
   position:fixed;
   bottom:100px;
@@ -85,9 +185,11 @@ body::after{
   border-radius:16px;
   background:rgba(0,0,0,0.6);
   color:white;
+  backdrop-filter:blur(10px);
+  cursor:pointer;
 }
 
-/* AUTH */
+/* ================= AUTH ================= */
 #authModal{
   position:fixed;
   inset:0;
@@ -130,7 +232,10 @@ button{
 
 <!-- LOGO -->
 <div id="title">
-  <div>BATTLE SOCIAL</div>
+  <div class="logo">
+    <span class="battle">BATTLE</span>
+    <span class="social">SOCIAL</span>
+  </div>
 </div>
 
 <!-- AUTH -->
@@ -187,101 +292,52 @@ authModal.onclick = (e)=>{
   }
 };
 
-/* DOT */
+/* DOT SYSTEM */
 let dots=[];
+
 for(let i=0;i<20;i++){
   let d=document.createElement("div");
   d.className="dot";
+
   let size = Math.random()*12+10;
   d.style.width=size+"px";
   d.style.height=size+"px";
   d.style.background=`hsl(${Math.random()*360},70%,70%)`;
+
   d.x=Math.random()*innerWidth;
   d.y=Math.random()*innerHeight;
+  d.tx=Math.random()*innerWidth;
+  d.ty=Math.random()*innerHeight;
+
+  d.onclick=()=>{
+    d.style.transform="scale(0)";
+    d.style.opacity=0;
+    setTimeout(()=>d.remove(),300);
+  };
+
   document.body.appendChild(d);
   dots.push(d);
 }
 
+/* ANIMATION */
 function animate(){
   dots.forEach(d=>{
+    d.x+=(d.tx-d.x)*0.015;
+    d.y+=(d.ty-d.y)*0.015;
+
+    if(Math.abs(d.x-d.tx)<1){
+      d.tx=Math.random()*innerWidth;
+      d.ty=Math.random()*innerHeight;
+    }
+
     d.style.left=d.x+"px";
     d.style.top=d.y+"px";
   });
+
   requestAnimationFrame(animate);
 }
 animate();
-
-/* GAME SYSTEM */
-let currentUser=null;
-let userData=null;
-
-authBtn.onclick=()=>{
-  let inputs=authModal.querySelectorAll("input");
-  let user=inputs[0].value;
-  let pass=inputs[1].value;
-
-  if(authTitle.innerText==="Đăng ký"){
-    let data={pass:pass,coin:100};
-    localStorage.setItem("user_"+user,JSON.stringify(data));
-    alert("OK");
-  }else{
-    let data=JSON.parse(localStorage.getItem("user_"+user));
-    if(!data || data.pass!==pass){
-      alert("Sai");
-      return;
-    }
-    currentUser=user;
-    userData=data;
-    startGame();
-  }
-};
-
-function startGame(){
-  authModal.style.display="none";
-
-  document.getElementById("gameScreen").style.display="block";
-  document.getElementById("title").style.display="none";
-
-  /* ẨN NỀN NGOÀI */
-  document.body.style.setProperty("--bgOpacity","0");
-
-  /* ẨN DOT */
-  document.querySelectorAll(".dot").forEach(d=>{
-    d.style.display="none";
-  });
-
-  document.getElementById("g_name").innerText=currentUser;
-  document.getElementById("g_coin").innerText=userData.coin;
-}
-
-function logout(){
-  location.reload();
-}
 </script>
-
-<!-- GAME SCREEN -->
-<div id="gameScreen" 
-style="
-display:none;
-position:fixed;
-inset:0;
-background-image:url('https://manhgopatel5.github.io/dreamapp/5C41187C-9AD8-4C7F-8AA1-5AD53A68C4FE.png');
-background-size:cover;
-background-position:center;
-background-repeat:no-repeat;
-z-index:99999;
-">
-
-  <div style="display:flex; justify-content:space-between; padding:10px; background:#0008;">
-    <div id="g_name"></div>
-    <div>💰 <span id="g_coin">100</span></div>
-  </div>
-
-  <div style="position:fixed; bottom:0; width:100%; display:flex; justify-content:space-around; background:#111; padding:10px;">
-    <div onclick="logout()">🚪 Logout</div>
-  </div>
-
-</div>
 
 </body>
 </html>
