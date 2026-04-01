@@ -1,35 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Battle Social</title>
 
 <style>
 body{
   margin:0;
   overflow:hidden;
   font-family:-apple-system;
+  background:#0b1d2a;
 }
 
-/* BACKGROUND */
-body::after{
-  content:"";
+/* background image fallback */
+.bg{
   position:fixed;
   inset:0;
-  background:url("IMG_0577.jpeg") no-repeat center;
-  background-size:cover;
-  filter:brightness(0.9);
+  background:url("IMG_0577.jpeg") center/cover no-repeat;
+  opacity:0.8;
 }
 
-/* CANVAS */
+/* canvas */
 canvas{
   position:fixed;
   inset:0;
 }
 
-/* TITLE */
+/* title */
 #title{
   position:fixed;
-  top:32%;
+  top:30%;
   left:50%;
   transform:translate(-50%,-50%);
   text-align:center;
@@ -38,18 +40,16 @@ canvas{
 .main{
   font-size:60px;
   font-weight:900;
-  color:red;
-  text-shadow:0 0 25px red;
+  color:#ff2a2a;
 }
 
 .sub{
   font-size:42px;
   margin-top:-10px;
-  color:orange;
-  text-shadow:0 0 20px orange;
+  color:#ffb300;
 }
 
-/* BUTTONS */
+/* buttons */
 #actions{
   position:fixed;
   top:50%;
@@ -63,66 +63,57 @@ canvas{
   width:110px;
   height:110px;
   border-radius:50%;
-
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-
-  color:white;
+  color:#fff;
   font-weight:700;
   text-transform:uppercase;
-  line-height:1.1;
   cursor:pointer;
-}
-
-.btn span{
-  display:block;
 }
 
 .login{
   background:linear-gradient(#4da6ff,#6a5cff);
-  box-shadow:0 0 25px #4da6ff;
 }
 
 .register{
   background:linear-gradient(#ff4d4d,#ff9f00);
-  box-shadow:0 0 25px #ff4d4d;
 }
 
-/* MODAL */
-#authModal{
+/* modal */
+#modal{
   position:fixed;
   inset:0;
   display:none;
   justify-content:center;
   align-items:center;
-  backdrop-filter:blur(20px);
+  background:rgba(0,0,0,0.5);
 }
 
 .card{
-  width:85%;
+  width:80%;
+  background:#111;
   padding:20px;
-  border-radius:20px;
-  background:rgba(0,0,0,0.85);
-  color:white;
+  border-radius:15px;
+  color:#fff;
 }
 
 input{
   width:100%;
   margin-top:10px;
-  padding:12px;
+  padding:10px;
+  border-radius:10px;
   border:none;
-  border-radius:12px;
 }
 
 button{
-  margin-top:15px;
+  margin-top:10px;
   padding:12px;
   border:none;
-  border-radius:20px;
-  background:linear-gradient(135deg,#6a5cff,#b16cff);
-  color:white;
+  border-radius:10px;
+  background:#6a5cff;
+  color:#fff;
   width:100%;
 }
 </style>
@@ -130,15 +121,14 @@ button{
 
 <body>
 
+<div class="bg"></div>
 <canvas id="c"></canvas>
 
-<!-- TITLE -->
 <div id="title">
   <div class="main">BATTLE</div>
   <div class="sub">SOCIAL</div>
 </div>
 
-<!-- BUTTON -->
 <div id="actions">
   <div class="btn login" onclick="openLogin()">
     <span>ĐĂNG</span>
@@ -151,163 +141,124 @@ button{
   </div>
 </div>
 
-<!-- MODAL -->
-<div id="authModal">
+<div id="modal">
   <div class="card">
-    <h3 id="authTitle"></h3>
+    <h3 id="titleModal"></h3>
     <input placeholder="Email">
     <input type="password" placeholder="Password">
     <input placeholder="Tên">
-    <button id="authBtn"></button>
+    <button id="btnModal"></button>
   </div>
 </div>
 
 <script>
-const canvas=document.getElementById("c");
-const ctx=canvas.getContext("2d");
+/* SAFE START */
+const canvas = document.getElementById("c");
+const ctx = canvas.getContext("2d");
 
 function resize(){
-  canvas.width=innerWidth;
-  canvas.height=innerHeight;
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 }
 resize();
-onresize=resize;
+window.onresize = resize;
 
-/* AUTH */
-const modal=document.getElementById("authModal");
-const title=document.getElementById("authTitle");
-const btn=document.getElementById("authBtn");
+/* MODAL */
+const modal = document.getElementById("modal");
+const titleModal = document.getElementById("titleModal");
+const btnModal = document.getElementById("btnModal");
 
 function openLogin(){
   modal.style.display="flex";
-  title.innerText="Đăng nhập";
-  btn.innerText="Login";
+  titleModal.innerText="Đăng nhập";
+  btnModal.innerText="Login";
 }
 
 function openRegister(){
   modal.style.display="flex";
-  title.innerText="Đăng ký";
-  btn.innerText="Register";
+  titleModal.innerText="Đăng ký";
+  btnModal.innerText="Register";
 }
 
-modal.onclick=e=>{
-  if(e.target===modal) modal.style.display="none";
+modal.onclick = e=>{
+  if(e.target === modal) modal.style.display="none";
 };
 
-/* PARTICLES */
-let dots=[];
-let touches={};
+/* PARTICLES (SAFE) */
+let dots = [];
 
 for(let i=0;i<20;i++){
   dots.push({
-    x:Math.random()*canvas.width,
-    y:Math.random()*canvas.height,
-    vx:(Math.random()-0.5)*3,
-    vy:(Math.random()-0.5)*3,
-    size:8+Math.random()*6,
-    color:`hsl(${Math.random()*360},70%,70%)`
+    x: Math.random()*canvas.width,
+    y: Math.random()*canvas.height,
+    vx: (Math.random()-0.5)*2,
+    vy: (Math.random()-0.5)*2,
+    r: 6 + Math.random()*6,
+    color: `hsl(${Math.random()*360},70%,70%)`
   });
 }
 
-/* TOUCH */
-canvas.addEventListener("touchstart",e=>{
-  for(let t of e.touches){
-    touches[t.identifier]={x:t.clientX,y:t.clientY};
-  }
-});
-
-canvas.addEventListener("touchmove",e=>{
-  for(let t of e.touches){
-    touches[t.identifier]={x:t.clientX,y:t.clientY};
-  }
-});
-
-canvas.addEventListener("touchend",e=>{
-  for(let t of e.changedTouches){
-    delete touches[t.identifier];
-  }
-});
-
-/* ANIMATE */
-function animate(){
+/* LOOP */
+function loop(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  dots.forEach(d=>{
+  /* move */
+  for(let i=0;i<dots.length;i++){
+    let d = dots[i];
 
-    /* FIX NaN */
-    if(!isFinite(d.x)||!isFinite(d.y)){
-      d.x=Math.random()*canvas.width;
-      d.y=Math.random()*canvas.height;
-      d.vx=(Math.random()-0.5)*2;
-      d.vy=(Math.random()-0.5)*2;
-    }
+    d.x += d.vx;
+    d.y += d.vy;
 
-    d.x+=d.vx;
-    d.y+=d.vy;
+    /* wall */
+    if(d.x < 0 || d.x > canvas.width) d.vx *= -1;
+    if(d.y < 0 || d.y > canvas.height) d.vy *= -1;
+  }
 
-    if(d.x<0||d.x>canvas.width) d.vx*=-1;
-    if(d.y<0||d.y>canvas.height) d.vy*=-1;
-
-    /* touch repel */
-    for(let id in touches){
-      let t=touches[id];
-      let dx=d.x-t.x;
-      let dy=d.y-t.y;
-      let dist=Math.sqrt(dx*dx+dy*dy);
-
-      if(dist<120){
-        d.vx+=dx/(dist||1)*2;
-        d.vy+=dy/(dist||1)*2;
-      }
-    }
-  });
-
-  /* COLLISION SAFE */
+  /* collision */
   for(let i=0;i<dots.length;i++){
     for(let j=i+1;j<dots.length;j++){
 
-      let a=dots[i];
-      let b=dots[j];
+      let a = dots[i];
+      let b = dots[j];
 
-      let dx=b.x-a.x;
-      let dy=b.y-a.y;
-      let dist=Math.sqrt(dx*dx+dy*dy);
+      let dx = b.x - a.x;
+      let dy = b.y - a.y;
+      let dist = Math.sqrt(dx*dx + dy*dy) || 0.001;
 
-      if(dist<0.001) dist=0.001;
+      let min = a.r + b.r;
 
-      let min=a.size/2+b.size/2;
+      if(dist < min){
 
-      if(dist<min){
+        let nx = dx / dist;
+        let ny = dy / dist;
 
-        let nx=dx/dist;
-        let ny=dy/dist;
+        let overlap = min - dist;
 
-        let overlap=min-dist;
+        a.x -= nx * overlap/2;
+        a.y -= ny * overlap/2;
+        b.x += nx * overlap/2;
+        b.y += ny * overlap/2;
 
-        a.x-=nx*overlap/2;
-        a.y-=ny*overlap/2;
-        b.x+=nx*overlap/2;
-        b.y+=ny*overlap/2;
-
-        a.vx-=nx*1.5;
-        a.vy-=ny*1.5;
-        b.vx+=nx*1.5;
-        b.vy+=ny*1.5;
+        a.vx -= nx;
+        a.vy -= ny;
+        b.vx += nx;
+        b.vy += ny;
       }
     }
   }
 
-  dots.forEach(d=>{
+  /* draw */
+  for(let d of dots){
     ctx.beginPath();
-    ctx.arc(d.x,d.y,d.size/2,0,Math.PI*2);
-    ctx.fillStyle=d.color;
+    ctx.arc(d.x, d.y, d.r, 0, Math.PI*2);
+    ctx.fillStyle = d.color;
     ctx.fill();
-  });
+  }
 
-  requestAnimationFrame(animate);
+  requestAnimationFrame(loop);
 }
 
-animate();
+loop();
 </script>
 
 </body>
