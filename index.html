@@ -1,53 +1,49 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Battle Social</title>
 
 <style>
+
+/* ================= RESET ================= */
 body{
   margin:0;
   overflow:hidden;
-  font-family:-apple-system;
+  font-family:-apple-system, Arial;
   background:#0b1d2a;
 }
-#title{
-  z-index:10;
-  position:fixed;
-}
 
-#actions{
-  z-index:20;
-  position:fixed;
-}
-
-.btn{
-  z-index:30;
-  position:relative;
-}
-/* BG */
-.bg{
+/* ================= BACKGROUND ================= */
+body::after{
+  content:"";
   position:fixed;
   inset:0;
-  background:url(...);
-  pointer-events:none; /* 🔥 THÊM */
-}
-
-/* CANVAS */
-canvas{
-  position:fixed;
-  inset:0;
-  pointer-events:none; /* 🔥 THÊM DÒNG NÀY */
+  background:url("IMG_0577.jpeg") no-repeat center;
+  background-size:cover;
+  filter:brightness(0.9);
+  pointer-events:none; /* 🔥 FIX CLICK */
   z-index:1;
 }
 
-/* TITLE */
+/* ================= CANVAS ================= */
+canvas{
+  position:fixed;
+  inset:0;
+  pointer-events:none; /* 🔥 FIX CLICK */
+  z-index:2;
+}
+
+/* ================= TITLE ================= */
 #title{
   position:fixed;
   top:30%;
   left:50%;
   transform:translate(-50%,-50%);
   text-align:center;
+  z-index:10;
   transition:0.5s;
 }
 
@@ -65,40 +61,51 @@ canvas{
   text-shadow:0 0 20px orange;
 }
 
-/* BUTTONS */
+/* ================= BUTTONS ================= */
 #actions{
   position:fixed;
   top:50%;
   left:50%;
   transform:translate(-50%,-50%);
   display:flex;
-  gap:20px;
-  transition:0.5s;
+  gap:25px;
+  z-index:20;
 }
 
 .btn{
-  width:110px;
-  height:110px;
+  width:120px;
+  height:120px;
   border-radius:50%;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  color:#fff;
+  color:white;
   font-weight:700;
   text-transform:uppercase;
   cursor:pointer;
   position:relative;
   overflow:hidden;
-  animation:pulse 2s infinite;
+  z-index:30;
+  transition:0.2s;
 }
 
-@keyframes pulse{
+/* glow */
+@keyframes glow{
   0%{box-shadow:0 0 10px rgba(255,255,255,0.2);}
-  50%{box-shadow:0 0 30px rgba(255,255,255,0.6);}
+  50%{box-shadow:0 0 35px rgba(255,255,255,0.7);}
   100%{box-shadow:0 0 10px rgba(255,255,255,0.2);}
 }
 
+.btn{
+  animation:glow 2s infinite;
+}
+
+.btn:active{
+  transform:scale(0.9);
+}
+
+/* colors */
 .login{
   background:linear-gradient(#4da6ff,#6a5cff);
 }
@@ -107,7 +114,7 @@ canvas{
   background:linear-gradient(#ff4d4d,#ff9f00);
 }
 
-/* RIPPLE */
+/* ripple */
 .ripple{
   position:absolute;
   border-radius:50%;
@@ -117,10 +124,13 @@ canvas{
 }
 
 @keyframes ripple{
-  to{transform:scale(4);opacity:0;}
+  to{
+    transform:scale(4);
+    opacity:0;
+  }
 }
 
-/* MODAL */
+/* ================= MODAL ================= */
 #modal{
   position:fixed;
   inset:0;
@@ -128,13 +138,14 @@ canvas{
   justify-content:center;
   align-items:center;
   backdrop-filter:blur(20px);
+  z-index:100;
 }
 
 .card{
-  width:80%;
-  background:rgba(0,0,0,0.85);
+  width:85%;
   padding:20px;
   border-radius:20px;
+  background:rgba(0,0,0,0.85);
   color:white;
 }
 
@@ -156,16 +167,17 @@ button{
   width:100%;
 }
 
-/* FLASH */
+/* ================= FLASH ================= */
 #flash{
   position:fixed;
   inset:0;
   background:white;
   opacity:0;
   transition:0.5s;
+  z-index:200;
 }
 
-/* LOADING */
+/* ================= LOADING ================= */
 #loading{
   position:fixed;
   inset:0;
@@ -175,6 +187,7 @@ button{
   flex-direction:column;
   background:#050f18;
   color:white;
+  z-index:300;
 }
 
 .bar{
@@ -191,6 +204,7 @@ button{
   background:linear-gradient(90deg,#6a5cff,#ff4d4d);
 }
 
+/* ================= HOME ================= */
 #home{
   position:fixed;
   inset:0;
@@ -200,13 +214,14 @@ button{
   color:white;
   font-size:30px;
   background:#050f18;
+  z-index:400;
 }
+
 </style>
 </head>
 
 <body>
 
-<div class="bg"></div>
 <canvas id="c"></canvas>
 
 <div id="title">
@@ -215,11 +230,12 @@ button{
 </div>
 
 <div id="actions">
-  <div class="btn login">
+  <div class="btn login" id="loginBtn">
     <span>ĐĂNG</span>
     <span>NHẬP</span>
   </div>
-  <div class="btn register">
+
+  <div class="btn register" id="registerBtn">
     <span>ĐĂNG</span>
     <span>KÝ</span>
   </div>
@@ -227,11 +243,11 @@ button{
 
 <div id="modal">
   <div class="card">
-    <h3 id="titleModal"></h3>
+    <h3 id="modalTitle"></h3>
     <input placeholder="Email">
     <input type="password" placeholder="Password">
     <input placeholder="Tên">
-    <button onclick="success()">TIẾP TỤC</button>
+    <button id="continueBtn">TIẾP TỤC</button>
   </div>
 </div>
 
@@ -247,25 +263,26 @@ button{
 </div>
 
 <script>
-/* MODAL */
-const modal=document.getElementById("modal");
-const titleModal=document.getElementById("titleModal");
 
-document.querySelector(".login").onclick=()=>{
+/* ================= BUTTON CLICK ================= */
+const modal = document.getElementById("modal");
+const modalTitle = document.getElementById("modalTitle");
+
+document.getElementById("loginBtn").onclick = ()=>{
   modal.style.display="flex";
-  titleModal.innerText="Đăng nhập";
+  modalTitle.innerText="Đăng nhập";
 };
 
-document.querySelector(".register").onclick=()=>{
+document.getElementById("registerBtn").onclick = ()=>{
   modal.style.display="flex";
-  titleModal.innerText="Đăng ký";
+  modalTitle.innerText="Đăng ký";
 };
 
-modal.onclick=e=>{
+modal.onclick = (e)=>{
   if(e.target===modal) modal.style.display="none";
 };
 
-/* RIPPLE */
+/* ripple */
 document.querySelectorAll(".btn").forEach(btn=>{
   btn.addEventListener("click",function(e){
     let r=document.createElement("span");
@@ -278,12 +295,12 @@ document.querySelectorAll(".btn").forEach(btn=>{
   });
 });
 
-/* SUCCESS FLOW */
-function success(){
+/* ================= SUCCESS FLOW ================= */
+document.getElementById("continueBtn").onclick = ()=>{
 
   modal.style.display="none";
 
-  document.getElementById("title").style.transform="translate(-50%,-50%) scale(1.5)";
+  document.getElementById("title").style.transform="translate(-50%,-50%) scale(1.4)";
   document.getElementById("actions").style.opacity="0";
 
   let flash=document.getElementById("flash");
@@ -292,7 +309,8 @@ function success(){
   setTimeout(()=>{
     flash.style.opacity="0";
 
-    document.getElementById("loading").style.display="flex";
+    let loading=document.getElementById("loading");
+    loading.style.display="flex";
 
     let fill=document.querySelector(".fill");
     let p=0;
@@ -303,17 +321,16 @@ function success(){
 
       if(p>=100){
         clearInterval(interval);
-
-        document.getElementById("loading").style.display="none";
+        loading.style.display="none";
         document.getElementById("home").style.display="flex";
       }
 
     },200);
 
   },600);
-}
+};
 
-/* PARTICLES */
+/* ================= PARTICLES ================= */
 const canvas=document.getElementById("c");
 const ctx=canvas.getContext("2d");
 
@@ -391,6 +408,7 @@ function loop(){
   requestAnimationFrame(loop);
 }
 loop();
+
 </script>
 
 </body>
