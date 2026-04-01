@@ -11,20 +11,34 @@ body{
   font-family:-apple-system;
   background:#0b1d2a;
 }
+#title{
+  z-index:10;
+  position:fixed;
+}
 
+#actions{
+  z-index:20;
+  position:fixed;
+}
+
+.btn{
+  z-index:30;
+  position:relative;
+}
 /* BG */
 .bg{
   position:fixed;
   inset:0;
-  background:url("IMG_0577.jpeg") center/cover no-repeat;
-  opacity:0.85;
+  background:url(...);
+  pointer-events:none; /* 🔥 THÊM */
 }
 
 /* CANVAS */
 canvas{
   position:fixed;
   inset:0;
-  pointer-events:none; /* 🔥 QUAN TRỌNG */
+  pointer-events:none; /* 🔥 THÊM DÒNG NÀY */
+  z-index:1;
 }
 
 /* TITLE */
